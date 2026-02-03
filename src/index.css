@@ -1,0 +1,378 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Vazirmatn font is loaded via import above */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* MORHO Design System - Dark Luxury Cafe Theme */
+
+@layer base {
+  :root {
+    /* Navy & White Theme - Primary */
+    --background: 221 87% 15%;
+    /* #051a47 */
+    --foreground: 0 0% 100%;
+
+    /* Card surfaces */
+    --card: 221 80% 13%;
+    --card-foreground: 0 0% 100%;
+
+    /* Popover */
+    --popover: 221 80% 13%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Primary - Navy Blue */
+    --primary: 221 87% 15%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Light Navy */
+    --secondary: 221 70% 20%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted */
+    --muted: 221 30% 25%;
+    --muted-foreground: 221 10% 75%;
+
+    /* Accent - Gold/White */
+    --accent: 221 70% 70%;
+    --accent-foreground: 221 87% 15%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border & Input */
+    --border: 221 30% 25%;
+    --input: 221 30% 25%;
+    --ring: 221 90% 50%;
+
+    --radius: 1rem;
+
+    /* Custom MORHO Colors */
+    --morho-deep: 221 87% 10%;
+    --morho-violet: 221 80% 18%;
+    --morho-royal: 221 80% 35%;
+    --morho-lavender: 221 90% 90%;
+    --morho-gold: 48 96% 53%;
+    --morho-text-secondary: 221 10% 80%;
+
+    /* Glassmorphism */
+    --glass-bg: 221 80% 13% / 0.6;
+    --glass-border: 221 30% 35% / 0.3;
+
+    /* Shadows */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.45);
+    --shadow-glow: 0 0 30px hsl(221 90% 50% / 0.3);
+    --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.6);
+
+    /* Sidebar */
+    --sidebar-background: 221 87% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 221 90% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 221 80% 18%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 221 30% 25%;
+    --sidebar-ring: 221 90% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    direction: rtl;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+    background: linear-gradient(135deg, hsl(var(--morho-deep)) 0%, hsl(var(--morho-violet)) 100%);
+    min-height: 100vh;
+    min-height: 100dvh;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+    -webkit-overflow-scrolling: touch;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Responsive typography utility */
+  .title-responsive {
+    font-size: clamp(2.2rem, 10vw + 1rem, 5.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .subtitle-responsive {
+    font-size: clamp(1rem, 2.5vw + 0.5rem, 1.4rem);
+    line-height: 1.6;
+  }
+
+  /* Custom utility for better mobile spacing */
+  .section-padding {
+    @apply py-12 sm:py-20 lg:py-32;
+  }
+
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer components {
+
+  /* Glassmorphism effect */
+  .glass {
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--glass-border));
+  }
+
+  .glass-card {
+    background: hsl(var(--morho-violet) / 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--morho-lavender) / 0.1);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Premium card hover */
+  .premium-card {
+    @apply glass-card rounded-2xl transition-all duration-500 ease-out;
+  }
+
+  .premium-card:hover {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: var(--shadow-hover), var(--shadow-glow);
+    border-color: hsl(var(--morho-lavender) / 0.3);
+  }
+
+  /* Gold star rating */
+  .star-gold {
+    color: hsl(var(--morho-gold));
+    filter: drop-shadow(0 0 4px hsl(var(--morho-gold) / 0.5));
+  }
+
+  /* Text gradient */
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--morho-lavender)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Accent underline */
+  .accent-underline {
+    position: relative;
+  }
+
+  .accent-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, hsl(var(--morho-royal)), hsl(var(--morho-lavender)));
+    border-radius: 1px;
+  }
+
+  /* Button glow effect */
+  .btn-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, hsl(var(--morho-royal)), hsl(var(--morho-lavender)));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-glow:hover::before {
+    opacity: 0.2;
+  }
+
+  /* Scroll fade in animation */
+  .fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Staggered entrance */
+  .stagger-1 {
+    animation-delay: 0.1s;
+  }
+
+  .stagger-2 {
+    animation-delay: 0.2s;
+  }
+
+  .stagger-3 {
+    animation-delay: 0.3s;
+  }
+
+  .stagger-4 {
+    animation-delay: 0.4s;
+  }
+
+  .stagger-5 {
+    animation-delay: 0.5s;
+  }
+
+  /* Ripple effect */
+  .ripple {
+    @apply relative overflow-hidden;
+  }
+
+  .ripple::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, hsl(var(--foreground) / 0.3) 0%, transparent 70%);
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
+
+  .ripple:active::after {
+    transform: scale(2);
+    opacity: 1;
+    transition: 0s;
+  }
+
+  /* Category badge */
+  .category-badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+    background: linear-gradient(135deg, hsl(var(--morho-royal) / 0.3), hsl(var(--morho-lavender) / 0.2));
+    border: 1px solid hsl(var(--morho-lavender) / 0.3);
+    color: hsl(var(--morho-lavender));
+  }
+
+  /* Mobile-First Card Foundation */
+  .card-base {
+    @apply flex flex-col rounded-2xl overflow-hidden;
+    @apply bg-morho-deep/60 backdrop-blur-sm;
+    @apply border border-white/5;
+    @apply shadow-card;
+  }
+
+  /* Touch Target Utility (44px minimum) */
+  .touch-target {
+    @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
+  }
+
+  /* Glass Effect - Minimal Blur */
+  .glass-minimal {
+    background: hsl(var(--morho-violet) / 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--morho-lavender) / 0.08);
+  }
+
+  /* Skeleton Loading Animation */
+  .skeleton {
+    @apply bg-white/5 animate-pulse;
+    background: linear-gradient(90deg,
+        hsl(var(--morho-violet) / 0.05) 0%,
+        hsl(var(--morho-lavender) / 0.1) 50%,
+        hsl(var(--morho-violet) / 0.05) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Mobile-First Container - Edge-to-Edge Layout */
+  .mobile-container {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .mobile-container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+
+  /* Prevent Horizontal Scroll */
+  .no-scroll-x {
+    overflow-x: hidden;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  /* Price Single-Line Display */
+  .price-nowrap {
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: max-content;
+  }
+
+  /* Hide Scrollbar (for horizontal scroll containers) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Stabilize Persian Text Alignment */
+  .rtl-text-stable {
+    text-align: right;
+    unicode-bidi: plaintext;
+  }
+
+  /* Prevent UI Jitter on Load/Render */
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 100px;
+  }
+}
