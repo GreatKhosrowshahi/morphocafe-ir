@@ -160,29 +160,16 @@ const ProductCard = ({
             - Price & CTA button
             - Divider for visual separation
         ======================================== */}
-        <div className="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
-
+        <div className="mt-auto pt-3 border-t border-white/5 flex items-center justify-center">
           {/* Price Section */}
-          <div className="flex items-baseline gap-1 price-nowrap overflow-hidden">
-            <span className="text-lg font-bold text-white tabular-nums tracking-tight">
+          <div className="flex items-baseline gap-1.5 price-nowrap">
+            <span className="text-xl font-extrabold text-white tabular-nums tracking-tight">
               {formatPrice(price)}
             </span>
-            <span className="text-[10px] text-white/60 font-medium shrink-0">
+            <span className="text-[12px] text-white/70 font-bold shrink-0">
               تومان
             </span>
           </div>
-
-          {/* CTA Button - 44px touch target */}
-          <motion.div
-            whileTap={{ scale: 0.92 }}
-            transition={{ duration: 0.15 }}
-            className="touch-target -mr-2"
-            aria-label="مشاهده جزئیات"
-          >
-            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-morho-lavender to-morho-royal text-morho-deep shadow-glow-sm active:shadow-card-active transition-shadow">
-              <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
-            </div>
-          </motion.div>
         </div>
       </div>
     </motion.article>
