@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2 } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { supabase } from "../supabaseClient";
-import { toast } from "sonner";
+import { toast } from "../components/ui/Toast/toast";
 
 interface CheckoutModalProps {
     isOpen: boolean;
@@ -120,7 +120,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="مثلا: علی محمدی - میز ۴"
-                                            className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-morho-gold outline-none transition-colors"
+                                            className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 focus:border-morho-gold outline-none transition-colors text-white placeholder:text-white/40"
                                         />
                                     </div>
 

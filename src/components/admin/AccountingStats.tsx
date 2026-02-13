@@ -39,6 +39,9 @@ const AccountingStats = () => {
         averageOrderValue: 0,
         manualOrders: 0,
         onlineOrders: 0,
+        orderTrend: 0,
+        manualPercentage: 0,
+        onlinePercentage: 0,
     });
     const [recentOrders, setRecentOrders] = useState<Order[]>([]);
     const [weeklySales, setWeeklySales] = useState<any[]>([]);
@@ -97,6 +100,24 @@ const AccountingStats = () => {
             }
         });
 
+        // Calculate trends (Current 7 days vs Previous 7 days)
+        const now = new Date();
+        const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+        const fourteenDaysAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+
+        const currentWeekOrders = validOrders.filter(o => new Date(o.created_at) > sevenDaysAgo).length;
+        const previousWeekOrders = validOrders.filter(o => {
+            const date = new Date(o.created_at);
+            return date > fourteenDaysAgo && date <= sevenDaysAgo;
+        }).length;
+
+        let orderTrend = 0;
+        if (previousWeekOrders > 0) {
+            orderTrend = Math.round(((currentWeekOrders - previousWeekOrders) / previousWeekOrders) * 100);
+        } else if (currentWeekOrders > 0) {
+            orderTrend = 100;
+        }
+
         setStats({
             totalSales: totalSum,
             totalOrders: validOrders.length,
@@ -105,6 +126,9 @@ const AccountingStats = () => {
             averageOrderValue: validOrders.length > 0 ? Math.round(totalSum / validOrders.length) : 0,
             manualOrders: manualCount,
             onlineOrders: onlineCount,
+            orderTrend: orderTrend,
+            manualPercentage: validOrders.length > 0 ? Math.round((manualCount / validOrders.length) * 100) : 0,
+            onlinePercentage: validOrders.length > 0 ? Math.round((onlineCount / validOrders.length) * 100) : 0,
         });
         setRecentOrders(validOrders.slice(0, 10));
         setWeeklySales(chartData);
@@ -185,7 +209,7 @@ const AccountingStats = () => {
                     subValue="تومان"
                     icon={DollarSign}
                     color="text-success"
-                    percentage={85}
+                    percentage={Math.min(100, Math.round((stats.totalSales / 10000000) * 100))} // Target: 10M Toman
                 />
                 <StatCard
                     title="حجم سفارشات"
@@ -193,8 +217,8 @@ const AccountingStats = () => {
                     subValue="سفارش"
                     icon={ShoppingBag}
                     color="text-accent"
-                    trend={12}
-                    percentage={72}
+                    trend={stats.orderTrend}
+                    percentage={Math.min(100, Math.round((stats.totalOrders / 500) * 100))} // Target: 500 orders
                 />
                 <StatCard
                     title="عملیات حضوری (POS)"
@@ -202,7 +226,7 @@ const AccountingStats = () => {
                     subValue="مورد"
                     icon={Calculator}
                     color="text-accent"
-                    percentage={40}
+                    percentage={stats.manualPercentage}
                 />
                 <StatCard
                     title="سفارشات آنلاین"
@@ -210,7 +234,7 @@ const AccountingStats = () => {
                     subValue="مورد"
                     icon={Zap}
                     color="text-accent"
-                    percentage={60}
+                    percentage={stats.onlinePercentage}
                 />
             </div>
 

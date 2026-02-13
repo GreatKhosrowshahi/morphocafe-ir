@@ -42,7 +42,7 @@ const Header = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed top-0 inset-x-0 z-50 bg-black/10 backdrop-blur-xl border-b border-white/5 shadow-lg support-backdrop-blur:bg-black/20"
+      className="fixed top-0 inset-x-0 z-50 bg-black/10 backdrop-blur-xl border-b border-white/5 shadow-lg support-backdrop-blur:bg-white/10"
     >
       <div className="mobile-container mx-auto">
         <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24 px-4">

@@ -5,7 +5,7 @@ import FeaturedProduct from "@/components/FeaturedProduct";
 import MenuSection from "@/components/MenuSection";
 import MoodSelector from "@/components/MoodSelector";
 import Footer from "@/components/Footer";
-import WelcomeScreen from "@/components/WelcomeScreen";
+import { WelcomeGate } from "@/components/WelcomeGate";
 import { useCart } from "@/contexts/CartContext";
 import { ShoppingBag } from "lucide-react";
 import CartSidebar from "@/components/CartSidebar";
@@ -36,7 +36,7 @@ const Index = () => {
   return (
     <>
       <AnimatePresence>
-        {showWelcome && <WelcomeScreen onEnter={handleEnter} />}
+        {showWelcome && <WelcomeGate onEnter={handleEnter} />}
       </AnimatePresence>
 
       <motion.div

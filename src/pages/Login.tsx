@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { User, Mail, Lock, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
 import { supabase } from "@/supabaseClient";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/Toast/toast";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ const Login = () => {
             if (error) throw error;
 
             if (data.user) {
-                toast.success("خوش آمدید!");
+                toast.success("خوش آمدید!", { description: "ورود با موفقیت انجام شد" });
                 navigate("/");
             }
         } catch (error: any) {

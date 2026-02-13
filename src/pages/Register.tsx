@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { UserPlus, Mail, Lock, User, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
 import { supabase } from "@/supabaseClient";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/Toast/toast";
 
 const Register = () => {
     const [email, setEmail] = useState("");
@@ -32,7 +32,7 @@ const Register = () => {
             if (error) throw error;
 
             if (data.user) {
-                toast.success("ثبت‌نام با موفقیت انجام شد. خوش آمدید!");
+                toast.success("ثبت‌نام با موفقیت انجام شد", { description: "به جمع خانواده مورفو خوش آمدید!" });
                 navigate("/");
             }
         } catch (error: any) {

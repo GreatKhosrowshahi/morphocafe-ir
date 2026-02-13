@@ -58,35 +58,70 @@ const MenuSection = ({ sectionRef, initialCategory }: MenuSectionProps) => {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20 sm:mb-28 relative"
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="text-center mb-16 sm:mb-24 relative flex flex-col items-center"
         >
-          {/* Decorative background text - Lighter and Serif */}
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[4rem] sm:text-[7rem] font-serif italic text-white/[0.02] pointer-events-none whitespace-nowrap tracking-widest">
-            Fine Dining
-          </span>
+          {/* Backing Text Layer - Large, Serif, Elegant */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] select-none pointer-events-none w-full">
+            <span className="block text-[5rem] md:text-[8rem] lg:text-[10rem] font-serif italic text-white/[0.03] whitespace-nowrap tracking-widest leading-none">
+              Morpho Selection
+            </span>
+          </div>
 
-          <div className="relative z-10 flex flex-col items-center">
-            {/* Delicate top accent */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              transition={{ duration: 1 }}
-              className="w-12 h-px bg-morho-gold/50 mb-6"
-            />
+          {/* Premium Badge - Top centered floating */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="relative mb-6"
+          >
+            <div className="px-4 py-1 rounded-full bg-morho-gold/10 border border-morho-gold/30 backdrop-blur-md">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-morho-gold">
+                Collection 2024
+              </span>
+            </div>
+          </motion.div>
 
-            <h2 className="text-3xl sm:text-5xl font-bold mb-4 text-white tracking-wide">
-              <span className="inline-block relative px-4">
-                منوی ما
+          {/* Main Content Layer */}
+          <div className="relative z-10 flex flex-col items-center max-w-2xl px-4">
+            {/* Title with Gold Gradient and Subtle Shadow */}
+            <h2 className="text-4xl sm:text-6xl font-black mb-6 text-white tracking-tight leading-tight">
+              <span className="bg-gradient-to-b from-white via-white to-white/50 bg-clip-text text-transparent inline-block pb-2">
+                منوی اختصاصی
               </span>
             </h2>
 
-            {/* Elegant bottom decoration */}
-            <div className="flex items-center gap-3 opacity-60">
-              <span className="w-12 h-px bg-gradient-to-l from-transparent to-white/30" />
-              <Heart className="w-3 h-3 text-morho-gold fill-morho-gold animate-pulse" />
-              <span className="w-12 h-px bg-gradient-to-r from-transparent to-white/30" />
+            {/* Subtitle / Description - Minimalist and Clean */}
+            <p className="text-white/40 text-sm sm:text-base font-medium max-w-[280px] sm:max-w-md mb-8 leading-relaxed font-vazir">
+              ترکیبی هنرمندانه از عطر قهوه و طعم‌های ماندگار، برای لحظات ناب شما
+            </p>
+
+            {/* Advanced Decorative Divider */}
+            <div className="flex items-center gap-6 w-full max-w-xs group">
+              <div className="h-px flex-1 bg-gradient-to-l from-morho-gold/50 via-white/5 to-transparent transition-all duration-700 group-hover:via-morho-gold/30" />
+              <div className="relative">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="w-8 h-8 rounded-lg border border-morho-gold/20 flex items-center justify-center rotate-45 backdrop-blur-sm"
+                >
+                  <Coffee className="w-3.5 h-3.5 text-morho-gold -rotate-45" />
+                </motion.div>
+                <div className="absolute inset-0 bg-morho-gold/20 blur-xl opacity-50 animate-pulse" />
+              </div>
+              <div className="h-px flex-1 bg-gradient-to-r from-morho-gold/50 via-white/5 to-transparent transition-all duration-700 group-hover:via-morho-gold/30" />
             </div>
+          </div>
+
+          {/* Side Floating Accents - Hidden on very small screens */}
+          <div className="absolute top-0 left-0 sm:left-10 lg:left-20 h-full flex flex-col justify-center gap-10 opacity-20 hidden sm:flex">
+            <div className="w-px h-20 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
+            <div className="w-1.5 h-1.5 rounded-full bg-morho-gold" />
+          </div>
+          <div className="absolute top-0 right-0 sm:right-10 lg:right-20 h-full flex flex-col justify-center gap-10 opacity-20 hidden sm:flex">
+            <div className="w-px h-20 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
+            <div className="w-1.5 h-1.5 rounded-full bg-morho-gold" />
           </div>
         </motion.div>
 

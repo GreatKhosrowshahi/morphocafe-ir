@@ -1,5 +1,3 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -14,6 +12,7 @@ import AuthGuard from "./components/auth/AuthGuard";
 import { MenuProvider } from "./contexts/MenuContext";
 import { CartProvider } from "./contexts/CartContext";
 import AnimatedBackground from "./components/AnimatedBackground";
+import { ToastProvider } from "@/components/ui/Toast/ToastContext";
 
 const queryClient = new QueryClient();
 
@@ -21,41 +20,34 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <MenuProvider>
       <CartProvider>
-        <AnimatedBackground />
-        <TooltipProvider>
-          <Toaster />
-          <Sonner position="top-center" toastOptions={{
-            classNames: {
-              toast: "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg backdrop-blur-xl",
-              description: "group-[.toast]:text-muted-foreground",
-              actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-              cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-            }
-          }} />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={
-                <AuthGuard>
-                  <Profile />
-                </AuthGuard>
-              } />
-              <Route path="/admin" element={<AdminLogin />} />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <AuthGuard requireAdmin={true}>
-                    <AdminDashboard />
+        <ToastProvider>
+          <AnimatedBackground />
+          <TooltipProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={
+                  <AuthGuard>
+                    <Profile />
                   </AuthGuard>
-                }
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+                } />
+                <Route path="/admin" element={<AdminLogin />} />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <AuthGuard requireAdmin={true}>
+                      <AdminDashboard />
+                    </AuthGuard>
+                  }
+                />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ToastProvider>
       </CartProvider>
     </MenuProvider>
   </QueryClientProvider>

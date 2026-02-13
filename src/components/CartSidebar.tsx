@@ -33,7 +33,7 @@ const CartSidebar = () => {
                         >
                             {/* Header */}
                             <div className="flex items-center justify-between p-6 border-b border-white/10">
-                                <h2 className="text-2xl font-bold flex items-center gap-2">
+                                <h2 className="text-2xl font-black text-white flex items-center gap-2">
                                     <ShoppingBag className="w-6 h-6 text-morho-gold" />
                                     سبد خرید
                                 </h2>
@@ -48,9 +48,9 @@ const CartSidebar = () => {
                             {/* Items List */}
                             <div className="flex-1 overflow-y-auto p-6 space-y-4">
                                 {items.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-4">
+                                    <div className="flex flex-col items-center justify-center h-full text-white/50 gap-4">
                                         <ShoppingBag className="w-16 h-16 opacity-20" />
-                                        <p>سبد خرید شما خالی است</p>
+                                        <p className="text-white font-medium">سبد خرید شما خالی است</p>
                                     </div>
                                 ) : (
                                     items.map((item) => (
@@ -62,7 +62,7 @@ const CartSidebar = () => {
                                             />
                                             <div className="flex-1 flex flex-col justify-between">
                                                 <div className="flex justify-between items-start">
-                                                    <h3 className="font-bold">{item.name}</h3>
+                                                    <h3 className="font-extrabold text-white text-lg">{item.name}</h3>
                                                     <button
                                                         onClick={() => removeFromCart(item.id)}
                                                         className="text-red-400 hover:text-red-300 transition-colors"
@@ -72,9 +72,9 @@ const CartSidebar = () => {
                                                 </div>
                                                 <div className="flex justify-between items-end">
                                                     <span className="font-bold text-morho-gold">
-                                                        {formatPrice(parsePrice(item.price) * item.quantity)} <span className="text-xs">تومان</span>
+                                                        {formatPrice(parsePrice(item.price) * item.quantity)} <span className="text-xs text-white">تومان</span>
                                                     </span>
-                                                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-1">
+                                                    <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-lg p-1 border border-white/5 text-white">
                                                         <button
                                                             onClick={() => updateQuantity(item.id, -1)}
                                                             className="p-1 hover:bg-white/10 rounded-md transition-colors"
@@ -98,11 +98,11 @@ const CartSidebar = () => {
 
                             {/* Footer */}
                             {items.length > 0 && (
-                                <div className="p-6 border-t border-white/10 bg-black/20 space-y-4">
-                                    <div className="flex justify-between items-center text-lg font-bold">
+                                <div className="p-6 border-t border-white/10 bg-white/5 backdrop-blur-xl space-y-4">
+                                    <div className="flex justify-between items-center text-xl font-black text-white">
                                         <span>جمع کل:</span>
                                         <span className="text-morho-gold">
-                                            {formatPrice(cartTotal.toLocaleString())} <span className="text-sm">تومان</span>
+                                            {formatPrice(cartTotal.toLocaleString())} <span className="text-sm text-white">تومان</span>
                                         </span>
                                     </div>
                                     <button

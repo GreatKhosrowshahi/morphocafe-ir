@@ -10,10 +10,10 @@ const Footer = () => {
       <div className="absolute top-0 left-0 w-full h-[500px] bg-morho-gold/5 blur-[150px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
 
           {/* Brand Column */}
-          <div className="space-y-6">
+          <div className="lg:col-span-3 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-morho-gold to-orange-500 flex items-center justify-center shadow-glow-gold">
                 <Coffee className="w-6 h-6 text-morho-deep" />
@@ -36,7 +36,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-6">
+          <div className="lg:col-span-2 lg:pr-4 space-y-6">
             <h3 className="text-lg font-bold text-morho-gold relative inline-block">
               دسترسی سریع
               <span className="absolute -bottom-2 right-0 w-1/2 h-0.5 bg-morho-gold/50 rounded-full"></span>
@@ -69,7 +69,7 @@ const Footer = () => {
           </div>
 
           {/* Working Hours */}
-          <div className="space-y-6">
+          <div className="lg:col-span-3 space-y-6">
             <h3 className="text-lg font-bold text-morho-gold relative inline-block">
               ساعات کاری
               <span className="absolute -bottom-2 right-0 w-1/2 h-0.5 bg-morho-gold/50 rounded-full"></span>
@@ -90,6 +90,31 @@ const Footer = () => {
                 </div>
               </li>
             </ul>
+          </div>
+
+          {/* Map Column */}
+          <div className="lg:col-span-4 space-y-6">
+            <h3 className="text-lg font-bold text-morho-gold relative inline-block">
+              موقعیت ما
+              <span className="absolute -bottom-2 right-0 w-1/2 h-0.5 bg-morho-gold/50 rounded-full"></span>
+            </h3>
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-morho-gold/20 to-orange-500/20 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d352.276235262612!2d50.05172663982019!3d35.76868547723455!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2snl!4v1771003218281!5m2!1sen!2snl"
+                  className="w-full h-full grayscale invert opacity-80 contrast-125 saturate-0 hover:grayscale-0 hover:invert-0 hover:opacity-100 transition-all duration-700 ease-in-out"
+                  style={{ border: 0 }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 mt-4 text-muted-foreground text-xs leading-relaxed">
+              <MapPin className="w-4 h-4 text-morho-gold shrink-0 mt-0.5" />
+              <span>بوئین زهرا، بلوار آزادگان، ابتدای بلوار فرمانداری، کافه مورفو</span>
+            </div>
           </div>
         </div>
 

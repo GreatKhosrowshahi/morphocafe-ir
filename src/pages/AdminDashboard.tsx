@@ -189,6 +189,72 @@ const AdminDashboard = () => {
         setUploading(false);
     };
 
+    const [dashStats, setDashStats] = useState({
+        activeOrders: 0,
+        customerCount: 0,
+        growth: 0,
+        systemStatus: "آنلاین"
+    });
+    const [activities, setActivities] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (activeTab === "overview") {
+            fetchDashboardStats();
+        }
+    }, [activeTab]);
+
+    const fetchDashboardStats = async () => {
+        const { count: urgentOrders } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .in('status', ['Pending', 'Processing']);
+
+        const { count: customers } = await supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true });
+
+        const { data: allSales } = await supabase
+            .from('orders')
+            .select('total_price, created_at')
+            .in('status', ['Paid', 'Completed']);
+
+        let growth = 0;
+        if (allSales && allSales.length > 0) {
+            const now = new Date();
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+
+            const currentMonthSales = allSales.filter(o => new Date(o.created_at) > lastMonth)
+                .reduce((acc, o) => acc + parseInt(o.total_price.replace(/,/g, '')), 0);
+
+            const totalSales = allSales.reduce((acc, o) => acc + parseInt(o.total_price.replace(/,/g, '')), 0);
+
+            if (totalSales > 0) {
+                growth = Math.round((currentMonthSales / totalSales) * 100);
+            }
+        }
+
+        setDashStats({
+            activeOrders: urgentOrders || 0,
+            customerCount: customers || 0,
+            growth: growth,
+            systemStatus: "فعال"
+        });
+
+        const { data: latestOrders } = await supabase
+            .from('orders')
+            .select('customer_name, created_at')
+            .order('created_at', { ascending: false })
+            .limit(3);
+
+        const activityLogs = (latestOrders || []).map(o => ({
+            title: "سفارش جدید ثبت شد",
+            desc: `${new Date(o.created_at).toLocaleTimeString('fa-IR')} - ${o.customer_name}`,
+            icon: ShoppingCart
+        }));
+
+        setActivities(activityLogs);
+    };
+
     const titleMap: Record<string, string> = {
         overview: "پیشخوان مدیریتی",
         products: "مدیریت منو و محصولات",
@@ -211,10 +277,10 @@ const AdminDashboard = () => {
                         {/* Quick Stats Summary - Warm Aesthetic */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
-                                { title: "سیستم فعال", value: "آنلاین", icon: Zap, status: "Active" },
-                                { title: "رشد فروش", value: "+۱۲٪", icon: TrendingUp, status: "Trending" },
-                                { title: "سفارشات", value: "۵ جدید", icon: ShoppingCart, status: "Alert" },
-                                { title: "مشتریان", value: "۱۴ فعال", icon: Users, status: "Live" }
+                                { title: "سیستم مرکزی", value: dashStats.systemStatus, icon: Zap, status: "Connected" },
+                                { title: "سهم فروش ماه", value: `+${dashStats.growth}٪`, icon: TrendingUp, status: "Revenue" },
+                                { title: "سفارشات باز", value: `${dashStats.activeOrders} مورد`, icon: ShoppingCart, status: "Active" },
+                                { title: "کل مشتریان", value: `${dashStats.customerCount} نفر`, icon: Users, status: "Registered" }
                             ].map((stat, i) => (
                                 <div
                                     key={i}
@@ -253,11 +319,7 @@ const AdminDashboard = () => {
                                     </button>
                                 </div>
                                 <div className="space-y-6">
-                                    {[
-                                        { title: "سفارش جدید ثبت شد", desc: "لحظاتی پیش - میز شماره ۴", icon: ShoppingCart },
-                                        { title: "محصول جدید اضافه شد", desc: "۱۰ دقیقه پیش - اسپرسو تنوری", icon: Package },
-                                        { title: "بروزرسانی موجودی", desc: "۳۰ دقیقه پیش - کیک ردولوت", icon: Activity }
-                                    ].map((act, i) => (
+                                    {activities.length > 0 ? activities.map((act, i) => (
                                         <div key={i} className="flex gap-4 items-center group cursor-pointer">
                                             <div className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center text-white/20 group-hover:bg-accent group-hover:text-primary-900 transition-all shrink-0 border border-white/5">
                                                 <act.icon className="w-5 h-5" />
@@ -267,7 +329,9 @@ const AdminDashboard = () => {
                                                 <p className="text-[10px] text-white/40 font-bold uppercase mt-0.5">{act.desc}</p>
                                             </div>
                                         </div>
-                                    ))}
+                                    )) : (
+                                        <p className="text-white/20 text-center py-10 text-sm">فعالیتی ثبت نشده است</p>
+                                    )}
                                 </div>
                             </div>
 

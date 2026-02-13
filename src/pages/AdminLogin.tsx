@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Lock, Mail, Key } from "lucide-react";
 import Header from "@/components/Header";
 import { supabase } from "@/supabaseClient";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/Toast/toast";
 
 const AdminLogin = () => {
     const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ const AdminLogin = () => {
             if (error) throw error;
 
             if (data.user) {
-                toast.success("خوش آمدید، مدیر");
+                toast.success("خوش آمدید، مدیر", { description: "دسترسی به پنل مدیریت تایید شد" });
                 navigate("/admin/dashboard");
             }
         } catch (error: any) {

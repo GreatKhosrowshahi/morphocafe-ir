@@ -92,8 +92,22 @@ const ProductCard = ({
           }}
         />
 
-        {/* Subtle gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-morho-deep/60 via-transparent to-transparent pointer-events-none" />
+        {/* Premium Layered Overlays */}
+        {/* 1. Base Darkening (Bottom-up) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-morho-deep via-transparent to-transparent z-[1]" />
+
+        {/* 2. Soft Edge Vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)] z-[2]" />
+
+        {/* 3. Shine Sweep Effect - Triggers on hover/click */}
+        <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none">
+          <motion.div
+            initial={{ x: "-200%", opacity: 0 }}
+            whileHover={{ x: "200%", opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-25deg]"
+          />
+        </div>
 
         {/* Category Badge - Top Left */}
         {category && (
@@ -154,7 +168,7 @@ const ProductCard = ({
         </div>
 
         {/* Description - line-clamp-2 */}
-        <p className="text-xs text-white/70 leading-relaxed line-clamp-2 min-h-[2.5rem]">
+        <p className="text-xs text-white leading-relaxed line-clamp-2 min-h-[2.5rem]">
           {description}
         </p>
 
@@ -169,7 +183,7 @@ const ProductCard = ({
             <span className="text-xl font-extrabold text-white tabular-nums tracking-tight">
               {formatPrice(price)}
             </span>
-            <span className="text-[12px] text-white/70 font-bold shrink-0">
+            <span className="text-[12px] text-white font-bold shrink-0">
               تومان
             </span>
           </div>

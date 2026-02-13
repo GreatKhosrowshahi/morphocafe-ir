@@ -47,7 +47,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                            className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/10 transition-colors"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -59,7 +59,13 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                                 alt={product.name}
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-morho-deep via-transparent to-transparent md:bg-gradient-to-r" />
+                            {/* Premium Depth Overlays */}
+                            {/* Bottom-up for mobile text/badge contrast */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-morho-deep via-transparent to-transparent md:hidden z-[1]" />
+                            {/* Right-to-left for desktop side-by-side contrast */}
+                            <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-morho-deep/60 via-transparent to-transparent z-[1]" />
+                            {/* Subtle overall vignette */}
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)] z-[2]" />
 
                             {/* Floating tags */}
                             <div className="absolute bottom-4 right-4 flex gap-2">
@@ -83,16 +89,16 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                                 {product.name}
                             </h2>
 
-                            <p className="text-muted-foreground leading-relaxed text-base sm:text-lg mb-8">
+                            <p className="text-white leading-relaxed text-base sm:text-lg mb-8">
                                 {product.description}
                                 <br /><br />
                                 تهیه شده از بهترین مواد اولیه با رسپی اختصاصی سرآشپز مورفو. یک تجربه طعمی متفاوت که با عشق برای شما آماده شده است.
                             </p>
 
                             {/* Flavor Profile / Stats */}
-                            <div className="grid grid-cols-2 gap-4 mb-8">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-2">
-                                    <div className="flex items-center gap-2 text-white/80 text-sm">
+                                    <div className="flex items-center gap-2 text-white text-sm">
                                         <Droplets className="w-4 h-4 text-blue-400" />
                                         <span>رطوبت و بافت</span>
                                     </div>
@@ -106,7 +112,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-2">
-                                    <div className="flex items-center gap-2 text-white/80 text-sm">
+                                    <div className="flex items-center gap-2 text-white text-sm">
                                         <Flame className="w-4 h-4 text-red-400" />
                                         <span>شیرینی</span>
                                     </div>
@@ -120,7 +126,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-2">
-                                    <div className="flex items-center gap-2 text-white/80 text-sm">
+                                    <div className="flex items-center gap-2 text-white text-sm">
                                         <ThermometerSun className="w-4 h-4 text-orange-400" />
                                         <span>طبع</span>
                                     </div>

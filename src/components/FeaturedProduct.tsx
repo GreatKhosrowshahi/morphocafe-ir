@@ -39,11 +39,18 @@ const FeaturedProduct = () => {
                                 transition={{ duration: 1.2 }}
                             />
 
-                            {/* Strong Gradient Overlay for Text Readability */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-morho-deep/95 via-morho-deep/70 to-transparent" />
+                            {/* Premium Layered Overlays for Depth and Legibility */}
+                            {/* 1. Base Darkening for left-side content contrast */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-morho-deep via-morho-deep/60 to-transparent z-[1]" />
 
-                            {/* Subtle Vignette */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+                            {/* 2. Sophisticated Edge Vignette - Warm Gold/Black mix */}
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-[2]" />
+
+                            {/* 3. Bottom-up contrast booster for price/CTA readability */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 z-[3]" />
+
+                            {/* 4. Subtle Top-down "Atmospheric" light */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-morho-lavender/10 via-transparent to-transparent z-[4]" />
                         </div>
 
                         {/* Floating Particles */}

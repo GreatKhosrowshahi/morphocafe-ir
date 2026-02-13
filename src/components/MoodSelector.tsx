@@ -68,10 +68,13 @@ const MoodSelector = ({ onSelectMood }: MoodSelectorProps) => {
                             onClick={() => onSelectMood(mood.id)}
                             className="group relative overflow-hidden rounded-3xl aspect-square sm:aspect-auto sm:h-48 p-5 sm:p-6 border border-white/10 bg-white/5 backdrop-blur-md hover:border-white/30 transition-all text-right flex flex-col justify-between"
                         >
-                            {/* Background Gradient/Glow */}
-                            <div className={`absolute inset-0 bg-gradient-to-br ${mood.color} opacity-0 group-hover:opacity-15 transition-opacity duration-500`} />
+                            {/* Premium Hover Glow & Reflection */}
+                            <div className={`absolute inset-0 bg-gradient-to-br ${mood.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 z-[1]`} />
 
-                            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${mood.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                            {/* Soft Corner Reflection */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-white/10 transition-colors" />
+
+                            <div className={`w-14 h-14 rounded-[1.25rem] bg-gradient-to-br ${mood.color} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 relative z-10`}>
                                 <mood.icon className="w-6 h-6 text-white" />
                             </div>
 
