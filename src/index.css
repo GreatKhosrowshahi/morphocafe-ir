@@ -1,87 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
-/* Vazirmatn font is loaded via import above */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Vazirmatn:wght@100;300;400;500;700;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* MORHO Design System - Dark Luxury Cafe Theme */
+/* MORPHO Professional Blue/Orange Theme */
 
 @layer base {
   :root {
-    /* Navy & White Theme - Primary */
-    --background: 221 87% 15%;
-    /* #051a47 */
-    --foreground: 0 0% 100%;
+    /* --- Professional Blue/Orange Foundation --- */
+    --background: #F9FAFB;
+    --foreground: #111827;
 
-    /* Card surfaces */
-    --card: 221 80% 13%;
-    --card-foreground: 0 0% 100%;
+    --bg-base: #F9FAFB;
+    --bg-header: linear-gradient(135deg, #F9FAFB 55%, #F2F6FF 100%);
+    --bg-card: #FFFFFF;
+    --bg-primary-dark: #041A4F;
 
-    /* Popover */
-    --popover: 221 80% 13%;
-    --popover-foreground: 0 0% 100%;
+    --accent: #F59E0B;
+    --accent-hover: #D97706;
 
-    /* Primary - Navy Blue */
-    --primary: 221 87% 15%;
-    --primary-foreground: 0 0% 100%;
+    --text-primary: #111827;
+    --text-muted: #6B7280;
+    --text-white: #FFFFFF;
 
-    /* Secondary - Light Navy */
-    --secondary: 221 70% 20%;
-    --secondary-foreground: 0 0% 100%;
+    --border: #E5E7EB;
+    --border-soft: rgba(8, 44, 135, 0.06);
 
-    /* Muted */
-    --muted: 221 30% 25%;
-    --muted-foreground: 221 10% 75%;
+    --shadow-card: 0 4px 24px rgba(8, 44, 135, 0.06);
+    --shadow-hover: 0 8px 30px rgba(8, 44, 135, 0.08);
 
-    /* Accent - Gold/White */
-    --accent: 221 70% 70%;
-    --accent-foreground: 221 87% 15%;
+    --radius-card: 20px;
+    --radius-btn: 50px;
+    --radius-input: 12px;
+    --radius-sm: 8px;
 
-    /* Destructive */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    /* Border & Input */
-    --border: 221 30% 25%;
-    --input: 221 30% 25%;
-    --ring: 221 90% 50%;
-
-    --radius: 1rem;
-
-    /* Custom MORHO Colors */
-    --morho-deep: 221 87% 10%;
-    --morho-violet: 221 80% 18%;
-    --morho-royal: 221 80% 35%;
-    --morho-lavender: 221 90% 90%;
-    --morho-gold: 48 96% 53%;
-    --morho-text-secondary: 221 10% 80%;
-
-    /* Glassmorphism */
-    --glass-bg: 221 80% 13% / 0.6;
-    --glass-border: 221 30% 35% / 0.3;
-
-    /* Shadows */
-    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.45);
-    --shadow-glow: 0 0 30px hsl(221 90% 50% / 0.3);
-    --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.6);
-
-    /* Sidebar */
-    --sidebar-background: 221 87% 15%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 221 90% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 221 80% 18%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 221 30% 25%;
-    --sidebar-ring: 221 90% 50%;
+    --sidebar-w: 260px;
+    --header-h: 72px;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
 
   html {
@@ -90,9 +51,8 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Vazirmatn', system-ui, sans-serif;
-    background: linear-gradient(135deg, hsl(var(--morho-deep)) 0%, hsl(var(--morho-violet)) 100%);
+    @apply bg-background text-foreground font-vazir antialiased selection:bg-primary selection:text-white;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
     min-height: 100vh;
     min-height: 100dvh;
     line-height: 1.6;
@@ -131,20 +91,46 @@
 
 @layer components {
 
-  /* Glassmorphism effect */
+  /* Entrance Animation */
+  @keyframes cardUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-card-up {
+    animation: cardUp 0.45s ease both;
+  }
+
+  /* Transition */
+  .transition-standard {
+    transition: all 0.2s ease;
+  }
+
+  /* Glassmorphism effect (Blue theme) */
   .glass {
-    background: hsl(var(--glass-bg));
+    background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--glass-border));
+    border: 1px solid rgba(8, 44, 135, 0.08);
   }
 
   .glass-card {
-    background: hsl(var(--morho-violet) / 0.8);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--morho-lavender) / 0.1);
-    box-shadow: var(--shadow-card);
+    @apply bg-white/70 backdrop-blur-md rounded-[20px] transition-all duration-300;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    border-color: #082C87;
   }
 
   /* Premium card hover */
@@ -154,25 +140,25 @@
 
   .premium-card:hover {
     transform: scale(1.03) translateY(-4px);
-    box-shadow: var(--shadow-hover), var(--shadow-glow);
-    border-color: hsl(var(--morho-lavender) / 0.3);
+    box-shadow: var(--shadow-hover), 0 0 20px rgba(8, 44, 135, 0.15);
+    border-color: rgba(8, 44, 135, 0.3);
   }
 
-  /* Gold star rating */
+  /* Accent star rating */
   .star-gold {
-    color: hsl(var(--morho-gold));
-    filter: drop-shadow(0 0 4px hsl(var(--morho-gold) / 0.5));
+    color: #F59E0B;
+    filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4));
   }
 
-  /* Text gradient */
+  /* Text gradient (Blue theme) */
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--morho-lavender)) 100%);
+    background: linear-gradient(135deg, #082C87 0%, #2A4FB3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* Accent underline */
+  /* Accent underline (Orange) */
   .accent-underline {
     position: relative;
   }
@@ -184,11 +170,11 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, hsl(var(--morho-royal)), hsl(var(--morho-lavender)));
+    background: #F59E0B;
     border-radius: 1px;
   }
 
-  /* Button glow effect */
+  /* Button glow effect (Accent Orange) */
   .btn-glow {
     @apply relative overflow-hidden;
   }
@@ -197,7 +183,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, hsl(var(--morho-royal)), hsl(var(--morho-lavender)));
+    background: #F59E0B;
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -244,6 +230,26 @@
     animation-delay: 0.5s;
   }
 
+  .stagger-6 {
+    animation-delay: 0.6s;
+  }
+
+  .stagger-7 {
+    animation-delay: 0.7s;
+  }
+
+  .stagger-8 {
+    animation-delay: 0.8s;
+  }
+
+  .stagger-9 {
+    animation-delay: 0.9s;
+  }
+
+  .stagger-10 {
+    animation-delay: 1s;
+  }
+
   /* Ripple effect */
   .ripple {
     @apply relative overflow-hidden;
@@ -265,20 +271,19 @@
     transition: 0s;
   }
 
-  /* Category badge */
+  /* Category badge (Primary Blue) */
   .category-badge {
-    @apply px-3 py-1 rounded-full text-xs font-medium;
-    background: linear-gradient(135deg, hsl(var(--morho-royal) / 0.3), hsl(var(--morho-lavender) / 0.2));
-    border: 1px solid hsl(var(--morho-lavender) / 0.3);
-    color: hsl(var(--morho-lavender));
+    @apply px-3 py-1 rounded-full text-xs font-bold;
+    background: #082C87;
+    color: #FFFFFF;
   }
 
-  /* Mobile-First Card Foundation */
+  /* Card Foundation (Light Theme) */
   .card-base {
-    @apply flex flex-col rounded-2xl overflow-hidden;
-    @apply bg-morho-deep/60 backdrop-blur-sm;
-    @apply border border-white/5;
-    @apply shadow-card;
+    @apply flex flex-col rounded-[20px] overflow-hidden;
+    @apply bg-primary-700/40 backdrop-blur-md;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   }
 
   /* Touch Target Utility (44px minimum) */
@@ -288,19 +293,19 @@
 
   /* Glass Effect - Minimal Blur */
   .glass-minimal {
-    background: hsl(var(--morho-violet) / 0.4);
+    background: rgba(8, 44, 135, 0.05);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1px solid hsl(var(--morho-lavender) / 0.08);
+    border: 1px solid rgba(8, 44, 135, 0.08);
   }
 
-  /* Skeleton Loading Animation */
+  /* Skeleton Loading (Gray Shimmer) */
   .skeleton {
-    @apply bg-white/5 animate-pulse;
+    @apply bg-gray-200/20 animate-pulse;
     background: linear-gradient(90deg,
-        hsl(var(--morho-violet) / 0.05) 0%,
-        hsl(var(--morho-lavender) / 0.1) 50%,
-        hsl(var(--morho-violet) / 0.05) 100%);
+        #F3F4F6 0%,
+        #E5E7EB 50%,
+        #F3F4F6 100%);
     background-size: 200% 100%;
     animation: shimmer 2s infinite linear;
   }
@@ -374,5 +379,23 @@
   .content-visibility-auto {
     content-visibility: auto;
     contain-intrinsic-size: 0 100px;
+  }
+
+  /* Gradient utilities */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #082C87 0%, #2A4FB3 100%);
+  }
+
+  .bg-gradient-accent {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  }
+
+  /* Shadow utilities */
+  .shadow-glow-gold {
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+  }
+
+  .shadow-glow-primary {
+    box-shadow: 0 4px 14px rgba(8, 44, 135, 0.2);
   }
 }

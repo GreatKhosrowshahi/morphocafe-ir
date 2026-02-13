@@ -1,80 +1,110 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Lock } from "lucide-react";
+import { Lock, Mail, Key } from "lucide-react";
 import Header from "@/components/Header";
+import { supabase } from "@/supabaseClient";
+import { toast } from "sonner";
 
 const AdminLogin = () => {
-    const [pin, setPin] = useState("");
-    const [error, setError] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (pin.toLowerCase() === "morpho") {
-            // Simple PIN check
-            localStorage.setItem("morho_admin_auth", "true");
-            navigate("/admin/dashboard");
-        } else {
-            setError("کد اشتباه است");
+        setLoading(true);
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) throw error;
+
+            if (data.user) {
+                toast.success("خوش آمدید، مدیر");
+                navigate("/admin/dashboard");
+            }
+        } catch (error: any) {
+            toast.error(error.message || "خطا در ورود");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex flex-col relative overflow-hidden bg-morho-dark text-foreground">
+        <div className="min-h-screen flex flex-col relative overflow-hidden bg-primary-900 text-white font-vazir">
             <Header />
 
             {/* Background blobs */}
-            <div className="fixed top-1/4 -right-1/4 w-96 h-96 rounded-full bg-morho-royal/20 blur-3xl pointer-events-none" />
-            <div className="fixed bottom-1/4 -left-1/4 w-96 h-96 rounded-full bg-morho-lavender/20 blur-3xl pointer-events-none" />
+            <div className="fixed top-1/4 -right-1/4 w-96 h-96 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
+            <div className="fixed bottom-1/4 -left-1/4 w-96 h-96 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
 
             <div className="flex-1 flex items-center justify-center pt-20 px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="w-full max-w-md p-8 glass-card rounded-2xl relative z-10"
+                    className="w-full max-w-md p-10 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 relative z-10 shadow-2xl"
                 >
-                    <div className="flex flex-col items-center mb-8">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-glow mb-4">
-                            <Lock className="w-6 h-6" />
+                    <div className="flex flex-col items-center mb-10">
+                        <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center shadow-lg border border-accent/20 mb-6">
+                            <Lock className="w-8 h-8 text-accent" />
                         </div>
-                        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
+                        <h1 className="text-3xl font-extrabold text-white tracking-tight">
                             ورود مدیریت
                         </h1>
+                        <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em] mt-3">Admin Portal Access</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-muted-foreground mb-2 text-right">
-                                کد امنیتی
+                    <form onSubmit={handleLogin} className="space-y-5">
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-bold text-white/40 mb-1 uppercase tracking-widest text-right mr-1">
+                                پست الکترونیک
                             </label>
-                            <input
-                                type="password"
-                                value={pin}
-                                onChange={(e) => setPin(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl bg-morho-royal/30 border border-white/10 focus:border-morho-lavender/50 text-center text-2xl tracking-widest outline-none transition-all placeholder:text-muted-foreground/30"
-                                placeholder="••••••"
-                                maxLength={6}
-                                autoFocus
-                            />
+                            <div className="relative group">
+                                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-accent transition-colors" />
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full pr-12 pl-4 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-accent outline-none transition-all text-white placeholder:text-white/10"
+                                    placeholder="admin@morphocafe.ir"
+                                />
+                            </div>
                         </div>
 
-                        {error && (
-                            <motion.p
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="text-red-400 text-sm text-center"
-                            >
-                                {error}
-                            </motion.p>
-                        )}
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-bold text-white/40 mb-1 uppercase tracking-widest text-right mr-1">
+                                رمز عبور
+                            </label>
+                            <div className="relative group">
+                                <Key className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-accent transition-colors" />
+                                <input
+                                    type="password"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full pr-12 pl-4 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-accent outline-none transition-all text-white placeholder:text-white/10"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
 
                         <button
                             type="submit"
-                            className="w-full py-3 rounded-xl bg-gradient-accent font-semibold text-lg hover:brightness-110 transition-all shadow-glow mt-4"
+                            disabled={loading}
+                            className={`w-full py-4 rounded-2xl bg-accent text-primary-900 font-extrabold text-lg hover:bg-accent/80 transition-all shadow-glow-accent mt-6 uppercase tracking-widest flex items-center justify-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                            ورود
+                            {loading ? (
+                                <div className="w-6 h-6 border-2 border-primary-900 border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                                "ورود به سیستم"
+                            )}
                         </button>
                     </form>
                 </motion.div>

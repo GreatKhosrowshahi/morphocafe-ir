@@ -102,7 +102,7 @@ const MoodBarista = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsOpen(true)}
-                        className="fixed bottom-6 left-6 z-40 w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-morho-gold via-yellow-400 to-orange-500 shadow-[0_0_30px_rgba(251,191,36,0.6)] hover:shadow-[0_0_40px_rgba(251,191,36,0.8)] flex items-center justify-center text-morho-deep transition-all duration-300"
+                        className="fixed bottom-6 left-6 z-40 w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-morho-gold via-yellow-400 to-orange-500 shadow-[0_0_30px_rgba(245,158,11,0.6)] hover:shadow-[0_0_40px_rgba(245,158,11,0.8)] flex items-center justify-center text-morho-deep transition-all duration-300"
                     >
                         {/* Pulsing outer ring */}
                         <motion.div

@@ -51,18 +51,18 @@ const FeaturedProduct = () => {
                             {[...Array(12)].map((_, i) => (
                                 <motion.div
                                     key={i}
-                                    className="absolute w-1 h-1 bg-morho-gold rounded-full"
+                                    className="absolute w-1.5 h-1.5 bg-morho-gold rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"
                                     style={{
-                                        left: `${20 + Math.random() * 60}%`,
+                                        left: `${10 + Math.random() * 80}%`,
                                         top: `${Math.random() * 100}%`,
                                     }}
                                     animate={{
-                                        y: [0, -120],
-                                        opacity: [0, 0.8, 0],
-                                        scale: [0, 1.5, 0]
+                                        y: [0, -180],
+                                        opacity: [0, 1, 0],
+                                        scale: [0, 1.2, 0]
                                     }}
                                     transition={{
-                                        duration: 3 + Math.random() * 2,
+                                        duration: 4 + Math.random() * 3,
                                         repeat: Infinity,
                                         delay: Math.random() * 3,
                                         ease: "easeOut"
@@ -70,6 +70,13 @@ const FeaturedProduct = () => {
                                 />
                             ))}
                         </div>
+
+                        {/* Ambient Content Glow - Subtly Pulse */}
+                        <motion.div
+                            animate={{ opacity: [0.3, 0.5, 0.3], scale: [1, 1.05, 1] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_30%_50%,rgba(8,44,135,0.4)_0%,transparent_60%)] pointer-events-none"
+                        />
 
                         {/* Main Content - Centered Vertically */}
                         <div className="relative z-20 h-full flex flex-col justify-center px-6 sm:px-10 lg:px-16 max-w-3xl">
@@ -80,10 +87,14 @@ const FeaturedProduct = () => {
                                 transition={{ duration: 0.8, delay: 0.2 }}
                             >
                                 {/* Special Tag */}
-                                <div className="inline-flex items-center gap-2 mb-3 sm:mb-4 px-3 py-1.5 rounded-full border border-morho-lavender/30 bg-morho-lavender/10 backdrop-blur-sm">
+                                <motion.div
+                                    animate={{ scale: [1, 1.05, 1], borderColor: ["rgba(95,125,206,0.3)", "rgba(95,125,206,0.6)", "rgba(95,125,206,0.3)"] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="inline-flex items-center gap-2 mb-3 sm:mb-4 px-3 py-1.5 rounded-full border border-morho-lavender/30 bg-morho-lavender/10 backdrop-blur-sm shadow-[0_0_15px_rgba(95,125,206,0.2)]"
+                                >
                                     <Sparkles className="w-3.5 h-3.5 text-morho-lavender" />
                                     <span className="text-xs sm:text-sm text-morho-lavender font-semibold tracking-wide">تجربه اختصاصی مورفو</span>
-                                </div>
+                                </motion.div>
 
                                 {/* Title - Single Line, No Wrap */}
                                 <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4 leading-tight line-clamp-2 sm:line-clamp-none">
@@ -130,18 +141,19 @@ const FeaturedProduct = () => {
                             </motion.div>
                         </div>
 
-                        {/* Shine Effect on Hover */}
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                        {/* Constant Shine Sweep Effect */}
+                        <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
                             <motion.div
                                 animate={{
-                                    x: ["-100%", "100%"]
+                                    x: ["-200%", "200%"]
                                 }}
                                 transition={{
-                                    duration: 1.5,
+                                    duration: 3,
                                     repeat: Infinity,
-                                    repeatDelay: 2
+                                    repeatDelay: 4,
+                                    ease: "easeInOut"
                                 }}
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12"
+                                className="absolute inset-x-0 top-0 bottom-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[35deg]"
                             />
                         </div>
                     </motion.div>

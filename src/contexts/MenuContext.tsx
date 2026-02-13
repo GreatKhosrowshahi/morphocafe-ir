@@ -58,39 +58,81 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     const [categories, setCategories] = useState<Category[]>(initialCategories);
     const [favorites, setFavorites] = useState<number[]>([]);
 
+    const fetchProductsAndStats = async () => {
+        // 1. Fetch products
+        const { data: productsData, error: productsError } = await supabase
+            .from('products')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (productsError) {
+            console.error('Error fetching products:', productsError);
+            return;
+        }
+
+        // 2. Fetch orders to calculate popularity
+        const { data: ordersData, error: ordersError } = await supabase
+            .from('orders')
+            .select('items');
+
+        if (ordersError) {
+            console.error('Error fetching orders for stats:', ordersError);
+            if (productsData) setProducts(productsData);
+            return;
+        }
+
+        // 3. Calculate popularity based on orders
+        const stats: Record<number, number> = {};
+        ordersData?.forEach((order: any) => {
+            const items = Array.isArray(order.items) ? order.items : [];
+            items.forEach((item: any) => {
+                const id = item.id;
+                if (id) {
+                    stats[id] = (stats[id] || 0) + (item.quantity || 1);
+                }
+            });
+        });
+
+        // 4. Update products with calculated ratings (1-5 range based on relative popularity)
+        const maxOrders = Math.max(...Object.values(stats), 1);
+        const updatedProducts = productsData.map((p: Product) => {
+            const orderCount = stats[p.id] || 0;
+            // Calculate a rating from 3.5 to 5.0 for products that have orders
+            const calculatedRating = orderCount > 0
+                ? Number((3.5 + (1.5 * (orderCount / maxOrders))).toFixed(1))
+                : p.rating; // Keep existing or default if no orders
+
+            return {
+                ...p,
+                rating: calculatedRating,
+                // Automatically mark top 20% or items with many orders as favorites if we want dynamic favorites
+                isFavorite: orderCount > (maxOrders * 0.5)
+            };
+        });
+
+        setProducts(updatedProducts);
+
+        // 5. Update favorites based on top ordered items (e.g. top 10)
+        const topOrderedIds = Object.entries(stats)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 10)
+            .map(([id]) => parseInt(id));
+
+        setFavorites(topOrderedIds);
+    };
+
     useEffect(() => {
-        // Fetch products from Supabase
-        const fetchProducts = async () => {
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('id', { ascending: true }); // Simple ordering
+        fetchProductsAndStats();
 
-            if (error) {
-                console.error('Error fetching products:', error);
-            } else if (data) {
-                setProducts(data);
-            }
-        };
-
-        fetchProducts();
-
-        // Optional: Realtime subscription
         const subscription = supabase
             .channel('products_channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
-                // Ideally trigger refetch or handle event. 
-                // For simplicity, let's just refetch to ensure consistency or handle simple adds.
-                // Simple Refetch:
-                fetchProducts();
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+                fetchProductsAndStats();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+                fetchProductsAndStats();
             })
             .subscribe();
-
-        // Load favorites from LocalStorage (Client-side preference)
-        const savedFavorites = localStorage.getItem("morho_favorites");
-        if (savedFavorites) {
-            setFavorites(JSON.parse(savedFavorites));
-        }
 
         return () => {
             supabase.removeChannel(subscription);
@@ -106,7 +148,7 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
         if (error) {
             console.error('Error adding product:', error);
         } else if (data) {
-            setProducts([...products, data[0]]);
+            fetchProductsAndStats();
         }
     };
 
@@ -119,7 +161,7 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
         if (error) {
             console.error('Error updating product:', error);
         } else {
-            setProducts(products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p)));
+            fetchProductsAndStats();
         }
     };
 
@@ -132,38 +174,47 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
         if (error) {
             console.error('Error deleting product:', error);
         } else {
-            setProducts(products.filter((p) => p.id !== id));
+            fetchProductsAndStats();
         }
     };
 
     const toggleFavorite = (id: number) => {
+        // Manual toggle still works but now we also have dynamic favorites
         const newFavorites = favorites.includes(id)
             ? favorites.filter((fid) => fid !== id)
             : [...favorites, id];
         setFavorites(newFavorites);
-        localStorage.setItem("morho_favorites", JSON.stringify(newFavorites));
     };
 
-    // Featured Product State (Persisted in LocalStorage)
+    // Featured Product State (Dynamic based on top ordered item)
     const [featuredProduct, setFeaturedProduct] = useState<FeaturedProductType>({
-        title: "لاته پسته و زعفران",
+        title: "لاته مخصوص مورفو",
         subtitle: "رویال",
-        description: "سمفونی طعم‌ها: ترکیب جادویی اسپرسوی ۱۰۰٪ عربیکا، شیر غنی شده با خامه پسته رفسنجان و عطر اصیل زعفران قائنات.",
+        description: "بهترین انتخاب کاربران در هفته گذشته بر اساس بیشترین ثبت سفارش.",
         price: "۸۵,۰۰۰",
         image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1000&auto=format&fit=crop",
-        badge: "پیشنهاد مورفو"
+        badge: "محبوب‌ترین"
     });
 
     useEffect(() => {
-        const saved = localStorage.getItem("morho_featured_product");
-        if (saved) {
-            setFeaturedProduct(JSON.parse(saved));
+        if (products.length > 0 && favorites.length > 0) {
+            const topId = favorites[0];
+            const topProduct = products.find(p => p.id === topId);
+            if (topProduct) {
+                setFeaturedProduct({
+                    title: topProduct.name,
+                    subtitle: "انتخاب اول مشتریان",
+                    description: topProduct.description || "این محصول در صدر لیست سفارشات مشتریان عزیز مورفو قرار دارد.",
+                    price: topProduct.price,
+                    image: topProduct.image,
+                    badge: "محبوب‌ترین"
+                });
+            }
         }
-    }, []);
+    }, [products, favorites]);
 
     const updateFeaturedProduct = (data: FeaturedProductType) => {
         setFeaturedProduct(data);
-        localStorage.setItem("morho_featured_product", JSON.stringify(data));
     };
 
     return (

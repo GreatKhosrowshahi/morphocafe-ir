@@ -1,6 +1,7 @@
 import { motion, Variants } from "framer-motion";
-import { Star, Heart, ArrowLeft } from "lucide-react";
+import { Star, Heart, ArrowLeft, ShoppingBag } from "lucide-react";
 import { formatPrice } from "../lib/utils";
+import { useCart } from "../contexts/CartContext";
 
 interface ProductCardProps {
   id: number;
@@ -39,6 +40,8 @@ const ProductCard = ({
   onToggleFavorite,
   onViewDetails
 }: ProductCardProps) => {
+  const { addToCart } = useCart();
+
 
   // Mobile-optimized animations - fast and smooth
   const cardVariants: Variants = {
@@ -151,7 +154,7 @@ const ProductCard = ({
         </div>
 
         {/* Description - line-clamp-2 */}
-        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 min-h-[2.5rem]">
+        <p className="text-xs text-white/70 leading-relaxed line-clamp-2 min-h-[2.5rem]">
           {description}
         </p>
 
@@ -160,7 +163,7 @@ const ProductCard = ({
             - Price & CTA button
             - Divider for visual separation
         ======================================== */}
-        <div className="mt-auto pt-3 border-t border-white/5 flex items-center justify-center">
+        <div className="mt-auto pt-3 border-t border-white/5 flex items-center justify-between gap-3">
           {/* Price Section */}
           <div className="flex items-baseline gap-1.5 price-nowrap">
             <span className="text-xl font-extrabold text-white tabular-nums tracking-tight">
@@ -170,6 +173,16 @@ const ProductCard = ({
               تومان
             </span>
           </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart({ id, name, description, price, rating, image, category: category || "" });
+            }}
+            className="p-2.5 bg-morho-gold text-morho-deep rounded-xl hover:bg-white transition-colors shadow-glow flex items-center justify-center"
+          >
+            <ShoppingBag className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </motion.article>

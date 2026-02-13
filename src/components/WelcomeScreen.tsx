@@ -136,7 +136,7 @@ const WelcomeScreen = ({ onEnter }: WelcomeScreenProps) => {
                 onClick={onEnter}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative px-12 py-5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 shadow-[0_0_20px_rgba(167,139,250,0.1)] hover:shadow-[0_0_30px_rgba(167,139,250,0.25)]"
+                className="group relative px-12 py-5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 shadow-[0_0_20px_rgba(95,125,206,0.1)] hover:shadow-[0_0_30px_rgba(95,125,206,0.25)]"
               >
                 <div className="flex items-center gap-3">
                   <ChevronLeft className="w-6 h-6 text-morho-lavender group-hover:-translate-x-1 transition-transform duration-300" />

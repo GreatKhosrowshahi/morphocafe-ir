@@ -1,331 +1,535 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMenu, Product } from "../contexts/MenuContext";
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, X, Upload, Save, LogOut, Star } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import {
+    LayoutDashboard,
+    ShoppingBag,
+    Settings,
+    PieChart,
+    LogOut,
+    Plus,
+    Trash2,
+    Edit2,
+    User,
+    Search,
+    Bell,
+    Menu,
+    TrendingUp,
+    TrendingDown,
+    Package,
+    Activity,
+    Star,
+    CheckCircle2,
+    Clock,
+    Users,
+    Zap,
+    Filter,
+    Save,
+    X,
+    Calculator,
+    ShoppingCart
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
+import AdminLayout from "../components/admin/AdminLayout";
+import ManualOrderEntry from "../components/admin/ManualOrderEntry";
+import OrdersTable from "../components/admin/OrdersTable";
+import AccountingStats from "../components/admin/AccountingStats";
 
-// Initial empty product for the form
-const emptyProduct: Omit<Product, "id"> = {
-    name: "",
-    description: "",
-    price: "",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&q=80",
-    category: "espresso-based",
-    badge: "",
-};
+interface Product {
+    id: number;
+    name: string;
+    description: string;
+    price: string;
+    category: string;
+    image: string;
+    badge?: string;
+}
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const { products, categories, addProduct, updateProduct, deleteProduct, featuredProduct, updateFeaturedProduct } = useMenu();
+    const location = useLocation();
+    const activeTab = new URLSearchParams(location.search).get("tab") || "overview";
+
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isFeaturedEdit, setIsFeaturedEdit] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [formData, setFormData] = useState<Omit<Product, "id">>(emptyProduct);
+    const [isFeaturedEdit, setIsFeaturedEdit] = useState(false);
+    const [featuredProduct, setFeaturedProduct] = useState({
+        title: "ماکیاتو کارامل ویژه",
+        subtitle: "نوشیدنی‌های گرم",
+        price: "۸۵,۰۰۰",
+        description: "ترکیب قهوه عربیکا با سیروپ کارامل خانگی و شیر مخملی",
+        image: "https://images.unsplash.com/photo-1485808191679-5f86510ef81a?q=80&w=1974&auto=format&fit=crop",
+        badge: "ویژه امروز"
+    });
+
+    const emptyProduct: Product = {
+        id: 0,
+        name: "",
+        description: "",
+        price: "",
+        category: "نوشیدنی‌های گرم",
+        image: "",
+        badge: ""
+    };
+
+    const [formData, setFormData] = useState<Product>(emptyProduct);
     const [uploading, setUploading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filterCategory, setFilterCategory] = useState("all");
+
+    const categories = [
+        { id: "all", label: "همه محصولات" },
+        { id: "نوشیدنی‌های گرم", label: "نوشیدنی‌های گرم" },
+        { id: "نوشیدنی‌های سرد", label: "نوشیدنی‌های سرد" },
+        { id: "دسر و شیرینی", label: "دسر و شیرینی" },
+        { id: "کیک‌ها", label: "کیک‌ها" }
+    ];
 
     useEffect(() => {
-        const auth = localStorage.getItem("morho_admin_auth");
-        if (!auth) {
-            navigate("/admin");
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) {
+            console.error("Error fetching products:", error);
+        } else {
+            setProducts(data || []);
         }
-    }, [navigate]);
-
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        try {
-            const file = e.target.files?.[0];
-            if (!file) return;
-
-            setUploading(true);
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('product-images')
-                .upload(filePath, file);
-
-            if (uploadError) {
-                console.error("Upload error:", uploadError);
-                alert('خطا در آپلود عکس! آیا باکت "product-images" را در سوپابیس ساخته‌اید؟');
-                setUploading(false);
-                return;
-            }
-
-            const { data } = supabase.storage
-                .from('product-images')
-                .getPublicUrl(filePath);
-
-            setFormData({ ...formData, image: data.publicUrl });
-        } catch (error) {
-            console.error("Error:", error);
-            alert("خطایی رخ داد");
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem("morho_admin_auth");
-        navigate("/");
-    };
-
-    const handleAddNew = () => {
-        setEditingProduct(null);
-        setIsFeaturedEdit(false);
-        setFormData(emptyProduct);
-        setIsModalOpen(true);
+        setLoading(false);
     };
 
     const handleEdit = (product: Product) => {
         setEditingProduct(product);
+        setFormData({ ...product });
         setIsFeaturedEdit(false);
-        setFormData(product);
         setIsModalOpen(true);
     };
 
-    const handleDelete = (id: number) => {
-        if (window.confirm("آیا از حذف این محصول اطمینان دارید؟")) {
-            deleteProduct(id);
+    const handleAddNew = () => {
+        setEditingProduct(null);
+        setFormData(emptyProduct);
+        setIsFeaturedEdit(false);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = async (id: number) => {
+        if (confirm("آیا از حذف این محصول اطمینان دارید؟")) {
+            const { error } = await supabase
+                .from('products')
+                .delete()
+                .eq('id', id);
+
+            if (error) alert("خطا در حذف محصول");
+            else fetchProducts();
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setUploading(true);
+
         if (isFeaturedEdit) {
-            updateFeaturedProduct({
+            setFeaturedProduct({
                 title: formData.name,
-                subtitle: formData.category, // Using category field for subtitle
-                description: formData.description,
+                subtitle: formData.category,
                 price: formData.price,
+                description: formData.description,
                 image: formData.image,
-                badge: formData.badge || "پیشنهاد مورفو"
+                badge: formData.badge || "ویژه"
             });
-        } else if (editingProduct) {
-            updateProduct({ ...formData, id: editingProduct.id });
-        } else {
-            addProduct(formData);
+            setIsModalOpen(false);
+            setUploading(false);
+            return;
         }
-        setIsModalOpen(false);
+
+        if (editingProduct) {
+            const { error } = await supabase
+                .from('products')
+                .update({
+                    name: formData.name,
+                    description: formData.description,
+                    price: formData.price,
+                    category: formData.category,
+                    image: formData.image,
+                    badge: formData.badge
+                })
+                .eq('id', editingProduct.id);
+
+            if (error) alert("خطا در بروزرسانی");
+            else {
+                setIsModalOpen(false);
+                fetchProducts();
+            }
+        } else {
+            const { error } = await supabase
+                .from('products')
+                .insert([{
+                    name: formData.name,
+                    description: formData.description,
+                    price: formData.price,
+                    category: formData.category,
+                    image: formData.image,
+                    badge: formData.badge
+                }]);
+
+            if (error) alert("خطا در ثبت محصول جدید");
+            else {
+                setIsModalOpen(false);
+                fetchProducts();
+            }
+        }
+        setUploading(false);
+    };
+
+    const titleMap: Record<string, string> = {
+        overview: "پیشخوان مدیریتی",
+        products: "مدیریت منو و محصولات",
+        orders: "بررسی سفارشات",
+        accounting: "گزارشات فروش و آمار",
+        pos: "ثبت سفارش دستی (POS)"
     };
 
     return (
-        <div className="min-h-screen bg-morho-dark text-foreground p-4 sm:p-8">
-            <div className="container mx-auto max-w-6xl">
-                {/* Header */}
-                <div className="flex justify-between items-center mb-10">
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-morho-lavender to-morho-blue">
-                        پنل مدیریت
-                    </h1>
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        خروج
-                    </button>
-                </div>
+        <AdminLayout title={titleMap[activeTab] || "داشبورد"}>
+            <div className="space-y-6">
 
-                {/* Actions */}
-                <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button
-                        onClick={handleAddNew}
-                        className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-accent font-semibold shadow-glow hover:brightness-110 transition-all"
+                {/* Overview Tab Content */}
+                {activeTab === "overview" && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-12"
                     >
-                        <Plus className="w-5 h-5" />
-                        افزودن محصول جدید
-                    </button>
-                    <button
-                        onClick={() => {
-                            setEditingProduct(null); // Clear product editing state
-                            setFormData({
-                                ...emptyProduct,
-                                name: featuredProduct.title,
-                                description: featuredProduct.description,
-                                price: featuredProduct.price,
-                                image: featuredProduct.image,
-                                badge: featuredProduct.badge,
-                                category: featuredProduct.subtitle // Using category field for subtitle hackily for now or add explicit field
-                            });
-                            // Better approach: use a specific state mode
-                            setIsFeaturedEdit(true);
-                            setIsModalOpen(true);
-                        }}
-                        className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-morho-gold/10 border border-morho-gold/20 text-morho-gold font-semibold hover:bg-morho-gold/20 transition-all"
-                    >
-                        <Star className="w-5 h-5" />
-                        ویرایش پیشنهاد ویژه
-                    </button>
-                </div>
+                        {/* Quick Stats Summary - Warm Aesthetic */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {[
+                                { title: "سیستم فعال", value: "آنلاین", icon: Zap, status: "Active" },
+                                { title: "رشد فروش", value: "+۱۲٪", icon: TrendingUp, status: "Trending" },
+                                { title: "سفارشات", value: "۵ جدید", icon: ShoppingCart, status: "Alert" },
+                                { title: "مشتریان", value: "۱۴ فعال", icon: Users, status: "Live" }
+                            ].map((stat, i) => (
+                                <div
+                                    key={i}
+                                    className="p-8 rounded-[20px] bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl hover:shadow-accent/5 transition-all duration-500 animate-card-up stagger-${i + 1}"
+                                >
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="p-4 rounded-full bg-accent/10 text-accent">
+                                            <stat.icon className="w-6 h-6" />
+                                        </div>
+                                        <span className="text-[10px] px-2.5 py-1 rounded-full font-bold uppercase border border-white/10 text-white/40">
+                                            {stat.status}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-4xl font-extrabold tracking-tight mb-1 text-white">{stat.value}</h4>
+                                    <p className="text-[11px] font-bold uppercase tracking-widest text-white/40">
+                                        {stat.title}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
 
-                {/* Products List */}
-                <div className="grid grid-cols-1 gap-4">
-                    {products.map((product) => (
-                        <div
-                            key={product.id}
-                            className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl glass-card border border-white/5 hover:border-white/10 transition-all"
-                        >
-                            <img
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full sm:w-24 h-24 rounded-xl object-cover"
-                            />
-                            <div className="flex-1 text-center sm:text-right">
-                                <h3 className="font-bold text-lg mb-1">{product.name}</h3>
-                                <p className="text-muted-foreground text-sm line-clamp-1">{product.description}</p>
-                                <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
-                                    <span className="text-xs px-2 py-1 rounded-full bg-morho-royal/50">
-                                        {categories.find(c => c.id === product.category)?.label || product.category}
-                                    </span>
-                                    <span className="text-xs px-2 py-1 rounded-full bg-gradient-accent text-white font-bold">
-                                        {product.price}
-                                    </span>
+                        {/* Middle Section */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Recent Activity - Warm Style */}
+                            <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-[20px] shadow-2xl p-8 animate-card-up stagger-5">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-1.5 h-6 bg-accent rounded-full" />
+                                        <h3 className="text-xl font-bold text-white tracking-tight">آخرین اقدامات</h3>
+                                    </div>
+                                    <button
+                                        onClick={() => navigate("/admin/dashboard?tab=orders")}
+                                        className="text-accent text-[10px] font-bold uppercase tracking-widest hover:underline"
+                                    >
+                                        مشاهده همه
+                                    </button>
+                                </div>
+                                <div className="space-y-6">
+                                    {[
+                                        { title: "سفارش جدید ثبت شد", desc: "لحظاتی پیش - میز شماره ۴", icon: ShoppingCart },
+                                        { title: "محصول جدید اضافه شد", desc: "۱۰ دقیقه پیش - اسپرسو تنوری", icon: Package },
+                                        { title: "بروزرسانی موجودی", desc: "۳۰ دقیقه پیش - کیک ردولوت", icon: Activity }
+                                    ].map((act, i) => (
+                                        <div key={i} className="flex gap-4 items-center group cursor-pointer">
+                                            <div className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center text-white/20 group-hover:bg-accent group-hover:text-primary-900 transition-all shrink-0 border border-white/5">
+                                                <act.icon className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h5 className="text-sm font-bold text-white group-hover:text-accent transition-colors">{act.title}</h5>
+                                                <p className="text-[10px] text-white/40 font-bold uppercase mt-0.5">{act.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                            <div className="flex gap-2 min-w-max">
+
+                            {/* Quick POS Action - Profile Style Gradient */}
+                            <div className="p-10 rounded-[20px] bg-white/5 border border-white/10 backdrop-blur-md flex flex-col items-center justify-center text-center shadow-2xl animate-card-up stagger-6 group overflow-hidden relative">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-accent opacity-[0.03] blur-3xl" />
+                                <div className="w-20 h-20 rounded-full bg-white/10 border border-white/10 flex items-center justify-center mb-6 shadow-2xl relative transition-all group-hover:scale-110">
+                                    <Calculator className="w-9 h-9 text-accent" />
+                                </div>
+                                <h3 className="text-3xl font-extrabold mb-3 tracking-tight text-white">ثبت سفارش سریع</h3>
+                                <p className="text-xs text-white/40 leading-relaxed max-w-[240px] mb-8 font-bold uppercase">
+                                    از سیستم ثبت سفارش دستی (POS) برای مشتریان حضوری استفاده کنید.
+                                </p>
                                 <button
-                                    onClick={() => handleEdit(product)}
-                                    className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors"
+                                    onClick={() => navigate("/admin/dashboard?tab=pos")}
+                                    className="px-10 py-4 rounded-full bg-accent text-primary-900 font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-accent/20 active:scale-95"
                                 >
-                                    <Edit2 className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(product.id)}
-                                    className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                                >
-                                    <Trash2 className="w-5 h-5" />
+                                    شروع سفارش جدید
                                 </button>
                             </div>
                         </div>
-                    ))}
-                </div>
+                    </motion.div>
+                )}
+
+                {/* Products Tab Content */}
+                {activeTab === "products" && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-8"
+                    >
+                        {/* Actions & Filters */}
+                        <div className="flex flex-col lg:flex-row items-end lg:items-center justify-between gap-6">
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={handleAddNew}
+                                    className="flex items-center justify-center gap-3 px-8 h-14 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dark)] font-black shadow-lg shadow-glow hover:brightness-110 transition-all text-white group"
+                                >
+                                    <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    <span className="uppercase tracking-widest text-xs">افزودن محصول</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setEditingProduct(null);
+                                        setFormData({
+                                            ...emptyProduct,
+                                            name: featuredProduct.title,
+                                            description: featuredProduct.description,
+                                            price: featuredProduct.price,
+                                            image: featuredProduct.image,
+                                            badge: featuredProduct.badge,
+                                            category: featuredProduct.subtitle
+                                        });
+                                        setIsFeaturedEdit(true);
+                                        setIsModalOpen(true);
+                                    }}
+                                    className="flex items-center justify-center gap-3 px-8 h-14 rounded-xl bg-white/5 border border-[var(--border)] text-[var(--gold)] font-black hover:bg-[var(--gold)]/10 hover:border-[var(--gold)]/50 transition-all group"
+                                >
+                                    <Star className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    <span className="uppercase tracking-widest text-xs">ویرایش ویژه</span>
+                                </button>
+                            </div>
+
+                            <div className="flex flex-1 gap-4 w-full lg:max-w-xl">
+                                <div className="relative flex-1 group">
+                                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-[var(--accent)] transition-colors" />
+                                    <input
+                                        type="text"
+                                        placeholder="جستجوی محصول..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pr-12 pl-4 py-4 rounded-xl bg-white/5 border border-[var(--border)] focus:border-[var(--accent)]/50 outline-none transition-all text-sm font-bold text-white placeholder:text-white/20"
+                                    />
+                                </div>
+                                <div className="relative group">
+                                    <Filter className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                                    <select
+                                        value={filterCategory}
+                                        onChange={(e) => setFilterCategory(e.target.value)}
+                                        className="pr-12 pl-10 py-4 rounded-xl bg-white/5 border border-[var(--border)] focus:border-[var(--accent)]/50 outline-none transition-all text-sm appearance-none min-w-[160px] font-black text-white"
+                                    >
+                                        <option value="all">همه دسته‌ها</option>
+                                        {categories.filter(c => c.id !== "all").map(cat => (
+                                            <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Products Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                            {products
+                                .filter(p => !searchQuery || p.name.includes(searchQuery))
+                                .filter(p => filterCategory === "all" || p.category === filterCategory)
+                                .map((product) => (
+                                    <div
+                                        key={product.id}
+                                        className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md hover:border-accent/40 transition-all hover:bg-white/10 flex flex-col font-vazir shadow-2xl"
+                                    >
+                                        <div className="aspect-[16/10] w-full overflow-hidden relative">
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-primary-900 via-transparent to-transparent opacity-60" />
+                                            {product.badge && (
+                                                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-accent text-primary-900 text-[10px] font-black uppercase tracking-widest shadow-lg">{product.badge}</span>
+                                            )}
+                                        </div>
+                                        <div className="p-6 flex-1 flex flex-col">
+                                            <div className="flex justify-between items-start mb-2 text-right">
+                                                <h3 className="font-extrabold text-xl text-white">{product.name}</h3>
+                                                <span className="text-accent font-black tracking-tight">
+                                                    {product.price}
+                                                </span>
+                                            </div>
+                                            <p className="text-white/40 text-sm line-clamp-2 mb-6 h-10 font-bold">{product.description}</p>
+
+                                            <div className="mt-auto flex gap-3">
+                                                <button
+                                                    onClick={() => handleEdit(product)}
+                                                    className="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-accent/40 text-[10px] font-black uppercase transition-all flex items-center justify-center gap-2 text-white"
+                                                >
+                                                    <Edit2 className="w-4 h-4" />
+                                                    ویرایش
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(product.id)}
+                                                    className="w-12 h-12 rounded-xl bg-danger/10 text-danger hover:bg-danger/20 transition-all flex items-center justify-center border border-danger/20"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </motion.div>
+                )}
+
+                {activeTab === "orders" && <OrdersTable />}
+                {activeTab === "accounting" && <AccountingStats />}
+                {activeTab === "pos" && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <ManualOrderEntry />
+                    </motion.div>
+                )}
+
             </div>
 
             {/* Edit/Add Modal */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="w-full max-w-lg bg-morho-deep border border-white/10 rounded-2xl p-6 m-4 max-h-[90vh] overflow-y-auto"
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="w-full max-w-lg bg-primary-900 border border-white/10 rounded-2xl p-10 m-4 max-h-[90vh] overflow-y-auto relative shadow-2xl font-vazir"
                         >
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-bold">
-                                    {editingProduct ? "ویرایش محصول" : "محصول جدید"}
-                                </h2>
-                                <button
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="absolute left-6 top-6 p-2 rounded-xl bg-white/5 text-white/40 hover:text-white transition-all border border-white/5"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
 
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm mb-2 text-muted-foreground">نام محصول</label>
+                            <h2 className="text-3xl font-black text-white mb-8 uppercase tracking-widest text-center">
+                                {isFeaturedEdit ? "ویرایش محصول ویژه" : editingProduct ? "ویرایش محصول" : "افزودن محصول جدید"}
+                            </h2>
+
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mr-2">نام محصول</label>
                                     <input
                                         required
+                                        type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-xl bg-black/20 border border-white/10 focus:border-morho-lavender outline-none"
+                                        className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-accent outline-none transition-all font-bold placeholder:text-white/10"
+                                        placeholder="مثلاً: قهوه ترک ویژه"
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm mb-2 text-muted-foreground">دسته‌بندی</label>
-                                    <select
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-xl bg-black/20 border border-white/10 focus:border-morho-lavender outline-none appearance-none"
-                                    >
-                                        {categories.filter(c => c.id !== "all" && c.id !== "favorites").map((cat) => (
-                                            <option key={cat.id} value={cat.id} className="bg-morho-deep text-foreground">
-                                                {cat.label}
-                                            </option>
-                                        ))}
-                                    </select>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mr-2">دسته بندی</label>
+                                        <select
+                                            value={formData.category}
+                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                            className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-accent outline-none transition-all font-bold appearance-none"
+                                        >
+                                            {categories.filter(c => c.id !== "all").map(cat => (
+                                                <option key={cat.id} value={cat.id} className="bg-primary-900 text-white">{cat.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mr-2">قیمت (تومان)</label>
+                                        <input
+                                            required
+                                            type="text"
+                                            value={formData.price}
+                                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                            className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-accent outline-none transition-all font-bold placeholder:text-white/10"
+                                            placeholder="۸۵,۰۰۰"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm mb-2 text-muted-foreground">قیمت</label>
-                                    <input
-                                        required
-                                        value={formData.price}
-                                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-xl bg-black/20 border border-white/10 focus:border-morho-lavender outline-none text-white"
-                                        placeholder="مثلا: ۴۵,۰۰۰"
-                                    />
-                                    <p className="text-[10px] text-muted-foreground mt-1">واحد «تومان» به صورت خودکار اضافه می‌شود.</p>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm mb-2 text-muted-foreground">توضیحات</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mr-2">توضیحات</label>
                                     <textarea
-                                        required
+                                        rows={3}
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-xl bg-black/20 border border-white/10 focus:border-morho-lavender outline-none min-h-[100px]"
+                                        className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-accent outline-none transition-all font-bold resize-none placeholder:text-white/10"
+                                        placeholder="توضیحات کوتاه درباره محصول..."
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm mb-2 text-muted-foreground">نشان (اولویت/تگ)</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mr-2">لینک تصویر</label>
                                     <input
-                                        value={formData.badge || ""}
-                                        onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-xl bg-black/20 border border-white/10 focus:border-morho-lavender outline-none"
-                                        placeholder="پیشنهادی، محبوب، ..."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm mb-2 text-muted-foreground">تصویر محصول</label>
-
-                                    {/* File Upload */}
-                                    <div className="flex gap-2 mb-2">
-                                        <label className="flex-1 cursor-pointer">
-                                            <div className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                                                <Upload className="w-4 h-4" />
-                                                <span className="text-sm">آپلود عکس جدید</span>
-                                            </div>
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleImageUpload}
-                                                className="hidden"
-                                                disabled={uploading}
-                                            />
-                                        </label>
-                                    </div>
-                                    {uploading && <p className="text-xs text-yellow-400 mb-2">در حال آپلود...</p>}
-
-                                    <input
+                                        type="url"
                                         value={formData.image}
                                         onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-xl bg-black/20 border border-white/10 focus:border-morho-lavender outline-none text-left text-xs text-muted-foreground"
-                                        dir="ltr"
-                                        placeholder="یا لینک تصویر را وارد کنید"
+                                        className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-accent outline-none transition-all font-bold placeholder:text-white/10"
+                                        placeholder="https://images.unsplash.com/..."
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mr-2">نشان اختصاصی (Badge)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.badge}
+                                        onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
+                                        className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-accent outline-none transition-all font-bold placeholder:text-white/10"
+                                        placeholder="ویژه امروز / جدید"
                                     />
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="w-full py-3 rounded-xl bg-gradient-accent font-bold mt-4 hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="w-full py-5 rounded-xl bg-accent text-primary-900 font-black uppercase tracking-[0.2em] mt-4 hover:bg-accent/80 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-glow-accent"
                                 >
                                     <Save className="w-5 h-5" />
-                                    {uploading ? "لطفا صبر کنید..." : "ذخیره محصول"}
+                                    {uploading ? "در حال پردازش..." : "ذخیره تغییرات نهایی"}
                                 </button>
                             </form>
                         </motion.div>
                     </div>
                 )}
             </AnimatePresence>
-        </div>
+        </AdminLayout>
     );
 };
 

@@ -25,87 +25,91 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Vazirmatn', 'system-ui', 'sans-serif'],
+        vazir: ['Vazirmatn', 'sans-serif'],
+        display: ['"Playfair Display"', 'serif'],
+        sans: ['Vazirmatn', 'sans-serif'],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "#E5E7EB",
+        input: "#F3F4F6",
+        ring: "rgba(8,44,135,0.3)",
+        background: "#F9FAFB",
+        foreground: "#111827",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#082C87",
+          foreground: "#FFFFFF",
+          50: "#F2F6FF",
+          100: "#DCE5FA",
+          200: "#9BB0E6",
+          300: "#5F7DCE",
+          400: "#2A4FB3",
+          500: "#082C87",
+          600: "#0A3CA0",
+          700: "#07307A",
+          800: "#06236B",
+          900: "#041A4F",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#F59E0B",
+          hover: "#D97706",
+          active: "#B45309",
+          light: "#FEF3C7",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+        gray: {
+          50: "#F9FAFB",
+          100: "#F3F4F6",
+          200: "#E5E7EB",
+          300: "#D1D5DB",
+          400: "#9CA3AF",
+          500: "#6B7280",
+          600: "#4B5563",
+          700: "#374151",
+          800: "#1F2937",
+          900: "#111827",
         },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        success: {
+          DEFAULT: "#16A34A",
+          light: "#DCFCE7",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        warning: {
+          DEFAULT: "#F59E0B",
+          light: "#FEF3C7",
         },
-        morho: {
-          deep: "hsl(var(--morho-deep))",
-          violet: "hsl(var(--morho-violet))",
-          royal: "hsl(var(--morho-royal))",
-          lavender: "hsl(var(--morho-lavender))",
-          gold: "hsl(var(--morho-gold))",
+        danger: {
+          DEFAULT: "#DC2626",
+          hover: "#B91C1C",
+          light: "#FEE2E2",
         },
+        info: {
+          DEFAULT: "#0EA5E9",
+          light: "#E0F2FE",
+        },
+        /* ───────────────────────────────────────────────
+         * Legacy morho-* aliases → new professional palette
+         * These map old class names used in customer-facing
+         * components to the new blue/orange design tokens.
+         * ─────────────────────────────────────────────── */
+        "morho-deep": "#041A4F",   // primary-900
+        "morho-royal": "#082C87",   // primary-500
+        "morho-lavender": "#5F7DCE",   // primary-300
+        "morho-gold": "#F59E0B",   // accent
+        "morho-violet": "#2A4FB3",   // primary-400
+        "morho-dark": "#020617",     // near-black (slate-950)
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        "2xl": "1rem",
-        "3xl": "1.5rem",
+        lg: "20px",
+        md: "12px",
+        sm: "8px",
+        pill: "50px",
+        "2xl": "20px",
+        "3xl": "24px",
       },
-      // Mobile-First Touch Targets
-      spacing: {
-        'touch-sm': '40px',
-        'touch-md': '44px',
-        'touch-lg': '48px',
-      },
-      // Soft Elevation System (Mobile-Optimized)
       boxShadow: {
-        'card': '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)',
-        'card-active': '0 1px 4px rgba(0, 0, 0, 0.06)',
-        'glow': '0 0 20px hsl(263 70% 50% / 0.2)',
-        'glow-sm': '0 0 12px hsl(263 70% 50% / 0.15)',
-        'glow-gold': '0 0 16px hsl(48 96% 53% / 0.25)',
-      },
-      // Line Clamp Utilities
-      lineClamp: {
-        1: '1',
-        2: '2',
-        3: '3',
+        'card': '0 4px 24px rgba(8, 44, 135, 0.06)',
+        'hover': '0 8px 30px rgba(8, 44, 135, 0.08)',
+        'glow': '0 0 20px rgba(8, 44, 135, 0.15)',
+        'glow-accent': '0 4px 14px rgba(245, 158, 11, 0.3)',
+        'card-active': '0 2px 8px rgba(8, 44, 135, 0.12)',
       },
       keyframes: {
         "accordion-down": {
@@ -124,25 +128,9 @@ export default {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
-        "scale-in": {
-          "0%": { opacity: "0", transform: "scale(0.95)" },
-          "100%": { opacity: "1", transform: "scale(1)" },
-        },
-        "slide-up": {
-          "0%": { opacity: "0", transform: "translateY(100%)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
         "shimmer": {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
-        },
-        "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(263 70% 50% / 0.3)" },
-          "50%": { boxShadow: "0 0 40px hsl(263 70% 50% / 0.5)" },
-        },
-        "float": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
         },
       },
       animation: {
@@ -150,16 +138,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-up": "fade-up 0.6s ease-out forwards",
         "fade-in": "fade-in 0.4s ease-out forwards",
-        "scale-in": "scale-in 0.3s ease-out forwards",
-        "slide-up": "slide-up 0.5s ease-out forwards",
         "shimmer": "shimmer 2s infinite linear",
-        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-        "float": "float 3s ease-in-out infinite",
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-morho': 'linear-gradient(135deg, hsl(var(--morho-deep)) 0%, hsl(var(--morho-violet)) 100%)',
-        'gradient-accent': 'linear-gradient(135deg, hsl(var(--morho-royal)) 0%, hsl(var(--morho-lavender)) 100%)',
       },
     },
   },

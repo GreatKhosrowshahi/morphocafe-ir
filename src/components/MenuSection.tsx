@@ -91,7 +91,7 @@ const MenuSection = ({ sectionRef, initialCategory }: MenuSectionProps) => {
         </motion.div>
 
         {/* Category filters */}
-        <div className="sticky top-[4.5rem] sm:top-[6rem] lg:top-[7rem] z-40 py-6 bg-background/95 mb-10 sm:mb-16 border-y border-white/5 shadow-sm">
+        <div className="sticky top-[4.5rem] sm:top-[6rem] lg:top-[7rem] z-40 py-6 mb-10 sm:mb-16 border-y border-white/5 shadow-sm">
           <div className="mobile-container">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
