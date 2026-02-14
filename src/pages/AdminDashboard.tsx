@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
+import { supabase } from "@/shared/lib/supabase";
 import {
     LayoutDashboard,
     ShoppingBag,
@@ -95,7 +95,7 @@ const AdminDashboard = () => {
         setLoading(true);
         const { data, error } = await supabase
             .from('products')
-            .select('*')
+            .select('id, name, description, price, category, image, badge')
             .order('id', { ascending: true });
 
         if (error) {
@@ -206,12 +206,12 @@ const AdminDashboard = () => {
     const fetchDashboardStats = async () => {
         const { count: urgentOrders } = await supabase
             .from('orders')
-            .select('*', { count: 'exact', head: true })
+            .select('id', { count: 'exact', head: true })
             .in('status', ['Pending', 'Processing']);
 
         const { count: customers } = await supabase
             .from('profiles')
-            .select('*', { count: 'exact', head: true });
+            .select('id', { count: 'exact', head: true });
 
         const { data: allSales } = await supabase
             .from('orders')

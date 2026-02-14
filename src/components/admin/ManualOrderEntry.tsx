@@ -17,7 +17,7 @@ import {
     ChevronDown
 } from "lucide-react";
 import { formatPrice, parsePrice } from "../../lib/utils";
-import { supabase } from "../../supabaseClient";
+import { supabase } from "@/shared/lib/supabase";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { printReceipt } from "./ReceiptPrinter";

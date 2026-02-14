@@ -1,14 +1,13 @@
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import FeaturedProduct from "@/components/FeaturedProduct";
 import MenuSection from "@/components/MenuSection";
 import MoodSelector from "@/components/MoodSelector";
 import Footer from "@/components/Footer";
 import { WelcomeGate } from "@/components/WelcomeGate";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/features/cart/context/CartContext";
 import { ShoppingBag } from "lucide-react";
-import CartSidebar from "@/components/CartSidebar";
 import FAQ from "@/components/FAQ";
 
 const Index = () => {
@@ -39,11 +38,8 @@ const Index = () => {
         {showWelcome && <WelcomeGate onEnter={handleEnter} />}
       </AnimatePresence>
 
-      <motion.div
-        className="min-h-screen"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: showWelcome ? 0 : 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+      <div
+        className={`min-h-screen transition-opacity duration-1000 ${showWelcome ? 'opacity-0' : 'opacity-100'}`}
       >
         <Header />
         <main className="pt-24">
@@ -56,16 +52,11 @@ const Index = () => {
           <FAQ />
         </main>
         <Footer />
-        <CartSidebar />
 
         {/* Floating Cart Button */}
-        <motion.button
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+        <button
           onClick={() => setIsCartOpen(true)}
-          className="fixed bottom-6 left-6 z-40 bg-morho-gold text-morho-deep p-4 rounded-full shadow-glow flex items-center justify-center"
+          className="fixed bottom-6 left-6 z-40 bg-morho-gold text-morho-deep p-4 rounded-full shadow-glow flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
         >
           <ShoppingBag className="w-6 h-6" />
           {itemCount > 0 && (
@@ -73,9 +64,9 @@ const Index = () => {
               {itemCount}
             </span>
           )}
-        </motion.button>
+        </button>
 
-      </motion.div>
+      </div>
     </>
   );
 };

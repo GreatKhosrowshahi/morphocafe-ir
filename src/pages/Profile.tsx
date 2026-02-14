@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { User, LogOut, ShoppingBag, Clock, ChevronLeft } from "lucide-react";
 import Header from "@/components/Header";
-import { supabase } from "@/supabaseClient";
+import { supabase } from "@/shared/lib/supabase";
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/utils";
 
@@ -149,8 +149,8 @@ const Profile = () => {
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
                                                 <span className="text-white font-bold text-lg">{formatPrice(order.total_price)} تومان</span>
                                                 <span className={`text-[10px] w-fit px-3 py-1 rounded-full font-bold uppercase tracking-widest mx-auto sm:mr-auto sm:ml-0 ${order.status === 'Completed' ? 'bg-success/10 text-success border border-success/20' :
-                                                        order.status === 'Cancelled' ? 'bg-danger/10 text-danger border border-danger/20' :
-                                                            'bg-accent/10 text-accent border border-accent/20'
+                                                    order.status === 'Cancelled' ? 'bg-danger/10 text-danger border border-danger/20' :
+                                                        'bg-accent/10 text-accent border border-accent/20'
                                                     }`}>
                                                     {order.status === 'Completed' ? 'تکمیل شده' : order.status === 'Cancelled' ? 'لغو شده' : 'در جریان'}
                                                 </span>

@@ -45,6 +45,18 @@ export default defineConfig(({ mode }) => ({
       }
     })
   ].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['framer-motion', 'lucide-react'],
+          'vendor-db': ['@supabase/supabase-js', '@tanstack/react-query'],
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

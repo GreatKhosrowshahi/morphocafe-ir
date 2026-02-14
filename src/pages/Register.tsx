@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserPlus, Mail, Lock, User, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
-import { supabase } from "@/supabaseClient";
+import { supabase } from "@/shared/lib/supabase";
 import { toast } from "@/components/ui/Toast/toast";
 
 const Register = () => {

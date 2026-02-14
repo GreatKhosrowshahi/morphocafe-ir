@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "@/features/cart/context/CartContext";
 import { formatPrice, parsePrice } from "../lib/utils";
 import { useState } from "react";
 import CheckoutModal from "./CheckoutModal";

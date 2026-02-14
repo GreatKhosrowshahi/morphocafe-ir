@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../supabaseClient";
+import { supabase } from "@/shared/lib/supabase";
 import { parsePrice, formatPrice } from "../../lib/utils";
 import {
     TrendingUp,

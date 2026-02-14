@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2 } from "lucide-react";
-import { useCart } from "../contexts/CartContext";
-import { supabase } from "../supabaseClient";
+import { useCart } from "@/features/cart/context/CartContext";
+import { supabase } from "@/shared/lib/supabase";
 import { toast } from "../components/ui/Toast/toast";
 
 interface CheckoutModalProps {

@@ -28,6 +28,7 @@ export default {
         vazir: ['Vazirmatn', 'sans-serif'],
         display: ['"Playfair Display"', 'serif'],
         sans: ['Vazirmatn', 'sans-serif'],
+        price: ['"Barlow Condensed"', 'sans-serif'],
       },
       colors: {
         border: "#E5E7EB",
@@ -35,6 +36,15 @@ export default {
         ring: "rgba(8,44,135,0.3)",
         background: "#F9FAFB",
         foreground: "#111827",
+        luxury: {
+          deep: "#0e1040",
+          surface: "rgba(255,255,255,0.04)",
+          border: "rgba(255,255,255,0.08)",
+          primary: "#f0f4ff",
+          muted: "#64748b",
+          violet: "#7c3aed",
+          cyan: "#00d4ff",
+        },
         primary: {
           DEFAULT: "#082C87",
           foreground: "#FFFFFF",

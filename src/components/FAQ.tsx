@@ -49,12 +49,8 @@ const FAQ = () => {
 
                 <div className="space-y-4">
                     {faqs.map((faq, index) => (
-                        <motion.div
+                        <div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
                             className={`group rounded-2xl border transition-all duration-300 ${activeIndex === index
                                 ? "bg-white/10 border-morho-gold/30 shadow-[0_0_30px_rgba(245,158,11,0.1)]"
                                 : "bg-white/5 border-white/5 hover:bg-white/10"
@@ -87,7 +83,7 @@ const FAQ = () => {
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
             </div>

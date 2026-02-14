@@ -53,37 +53,18 @@ const FeaturedProduct = () => {
                             <div className="absolute inset-0 bg-gradient-to-b from-morho-lavender/10 via-transparent to-transparent z-[4]" />
                         </div>
 
-                        {/* Floating Particles */}
-                        <div className="absolute inset-0 pointer-events-none z-10">
-                            {[...Array(12)].map((_, i) => (
-                                <motion.div
-                                    key={i}
-                                    className="absolute w-1.5 h-1.5 bg-morho-gold rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"
-                                    style={{
-                                        left: `${10 + Math.random() * 80}%`,
-                                        top: `${Math.random() * 100}%`,
-                                    }}
-                                    animate={{
-                                        y: [0, -180],
-                                        opacity: [0, 1, 0],
-                                        scale: [0, 1.2, 0]
-                                    }}
-                                    transition={{
-                                        duration: 4 + Math.random() * 3,
-                                        repeat: Infinity,
-                                        delay: Math.random() * 3,
-                                        ease: "easeOut"
-                                    }}
-                                />
-                            ))}
-                        </div>
-
                         {/* Ambient Content Glow - Subtly Pulse */}
-                        <motion.div
-                            animate={{ opacity: [0.3, 0.5, 0.3], scale: [1, 1.05, 1] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_30%_50%,rgba(8,44,135,0.4)_0%,transparent_60%)] pointer-events-none"
-                        />
+                        <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_30%_50%,rgba(8,44,135,0.4)_0%,transparent_60%)] pointer-events-none animate-pulse-slow" />
+
+                        <style>{`
+                            @keyframes pulse-slow {
+                                0%, 100% { opacity: 0.3; transform: scale(1); }
+                                50% { opacity: 0.5; transform: scale(1.05); }
+                            }
+                            .animate-pulse-slow {
+                                animation: pulse-slow 4s ease-in-out infinite;
+                            }
+                        `}</style>
 
                         {/* Main Content - Centered Vertically */}
                         <div className="relative z-20 h-full flex flex-col justify-center px-6 sm:px-10 lg:px-16 max-w-3xl">

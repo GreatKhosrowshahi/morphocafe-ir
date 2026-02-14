@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Coffee, User, LogIn } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/supabaseClient";
+import { supabase } from "@/shared/lib/supabase";
 
 const Header = () => {
   const navigate = useNavigate();

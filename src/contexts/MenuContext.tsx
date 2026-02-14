@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { supabase } from "@/shared/lib/supabase";
 
 export interface Product {
     id: number;
@@ -55,14 +55,14 @@ const initialCategories: Category[] = [
 
 export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>(initialCategories);
+    const [categories] = useState<Category[]>(initialCategories);
     const [favorites, setFavorites] = useState<number[]>([]);
 
-    const fetchProductsAndStats = async () => {
-        // 1. Fetch products
+    const fetchProductsAndStats = useCallback(async () => {
+        // 1. Fetch products - Select only needed columns for performance
         const { data: productsData, error: productsError } = await supabase
             .from('products')
-            .select('*')
+            .select('id, name, description, price, rating, image, category, badge')
             .order('id', { ascending: true });
 
         if (productsError) {
@@ -70,7 +70,7 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
             return;
         }
 
-        // 2. Fetch orders to calculate popularity
+        // 2. Fetch orders - Select only items for stats calculation
         const { data: ordersData, error: ordersError } = await supabase
             .from('orders')
             .select('items');
@@ -93,39 +93,40 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
             });
         });
 
-        // 4. Update products with calculated ratings (1-5 range based on relative popularity)
-        const maxOrders = Math.max(...Object.values(stats), 1);
-        const updatedProducts = productsData.map((p: Product) => {
+        const statsValues = Object.values(stats);
+        const maxOrders = statsValues.length > 0 ? Math.max(...statsValues) : 1;
+
+        // 4. Update products with calculated ratings
+        const updatedProducts = (productsData || []).map((p: Product) => {
             const orderCount = stats[p.id] || 0;
-            // Calculate a rating from 3.5 to 5.0 for products that have orders
             const calculatedRating = orderCount > 0
                 ? Number((3.5 + (1.5 * (orderCount / maxOrders))).toFixed(1))
-                : p.rating; // Keep existing or default if no orders
+                : p.rating;
 
             return {
                 ...p,
                 rating: calculatedRating,
-                // Automatically mark top 20% or items with many orders as favorites if we want dynamic favorites
                 isFavorite: orderCount > (maxOrders * 0.5)
             };
         });
 
         setProducts(updatedProducts);
 
-        // 5. Update favorites based on top ordered items (e.g. top 10)
+        // 5. Update favorites
         const topOrderedIds = Object.entries(stats)
             .sort(([, a], [, b]) => b - a)
             .slice(0, 10)
             .map(([id]) => parseInt(id));
 
         setFavorites(topOrderedIds);
-    };
+    }, []);
 
     useEffect(() => {
         fetchProductsAndStats();
 
-        const subscription = supabase
-            .channel('products_channel')
+        const channel = supabase.channel('menu_realtime');
+
+        channel
             .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
                 fetchProductsAndStats();
             })
@@ -135,11 +136,11 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
             .subscribe();
 
         return () => {
-            supabase.removeChannel(subscription);
+            supabase.removeChannel(channel);
         };
-    }, []);
+    }, [fetchProductsAndStats]);
 
-    const addProduct = async (product: Omit<Product, "id">) => {
+    const addProduct = useCallback(async (product: Omit<Product, "id">) => {
         const { data, error } = await supabase
             .from('products')
             .insert([product])
@@ -150,9 +151,9 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
         } else if (data) {
             fetchProductsAndStats();
         }
-    };
+    }, [fetchProductsAndStats]);
 
-    const updateProduct = async (updatedProduct: Product) => {
+    const updateProduct = useCallback(async (updatedProduct: Product) => {
         const { error } = await supabase
             .from('products')
             .update(updatedProduct)
@@ -163,9 +164,9 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
             fetchProductsAndStats();
         }
-    };
+    }, [fetchProductsAndStats]);
 
-    const deleteProduct = async (id: number) => {
+    const deleteProduct = useCallback(async (id: number) => {
         const { error } = await supabase
             .from('products')
             .delete()
@@ -176,18 +177,16 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
             fetchProductsAndStats();
         }
-    };
+    }, [fetchProductsAndStats]);
 
-    const toggleFavorite = (id: number) => {
-        // Manual toggle still works but now we also have dynamic favorites
-        const newFavorites = favorites.includes(id)
-            ? favorites.filter((fid) => fid !== id)
-            : [...favorites, id];
-        setFavorites(newFavorites);
-    };
+    const toggleFavorite = useCallback((id: number) => {
+        setFavorites(prev =>
+            prev.includes(id) ? prev.filter(fid => fid !== id) : [...prev, id]
+        );
+    }, []);
 
-    // Featured Product State (Dynamic based on top ordered item)
-    const [featuredProduct, setFeaturedProduct] = useState<FeaturedProductType>({
+    // Featured Product State
+    const [featuredProduct, setFeaturedProductState] = useState<FeaturedProductType>({
         title: "لاته مخصوص مورفو",
         subtitle: "رویال",
         description: "بهترین انتخاب کاربران در هفته گذشته بر اساس بیشترین ثبت سفارش.",
@@ -201,7 +200,7 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
             const topId = favorites[0];
             const topProduct = products.find(p => p.id === topId);
             if (topProduct) {
-                setFeaturedProduct({
+                setFeaturedProductState({
                     title: topProduct.name,
                     subtitle: "انتخاب اول مشتریان",
                     description: topProduct.description || "این محصول در صدر لیست سفارشات مشتریان عزیز مورفو قرار دارد.",
@@ -213,24 +212,24 @@ export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [products, favorites]);
 
-    const updateFeaturedProduct = (data: FeaturedProductType) => {
-        setFeaturedProduct(data);
-    };
+    const updateFeaturedProduct = useCallback((data: FeaturedProductType) => {
+        setFeaturedProductState(data);
+    }, []);
+
+    const value = useMemo(() => ({
+        products,
+        categories,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        toggleFavorite,
+        favorites,
+        featuredProduct,
+        updateFeaturedProduct
+    }), [products, categories, addProduct, updateProduct, deleteProduct, toggleFavorite, favorites, featuredProduct, updateFeaturedProduct]);
 
     return (
-        <MenuContext.Provider
-            value={{
-                products,
-                categories,
-                addProduct,
-                updateProduct,
-                deleteProduct,
-                toggleFavorite,
-                favorites,
-                featuredProduct,
-                updateFeaturedProduct
-            }}
-        >
+        <MenuContext.Provider value={value}>
             {children}
         </MenuContext.Provider>
     );

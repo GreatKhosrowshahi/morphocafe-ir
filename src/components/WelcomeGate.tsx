@@ -42,10 +42,23 @@ export const WelcomeGate: React.FC<WelcomeGateProps> = ({ onEnter }) => {
         >
             {/* Premium Background */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_70%)]" />
+                {/* Background Video */}
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                    src="/me-bg.mp4"
+                />
+
+                {/* Dark Overlay for Legibility */}
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent_70%)]" />
                 <motion.div
                     style={{ opacity: bgOpacity }}
-                    className="absolute inset-0 bg-gradient-to-br from-morho-deep via-[#02040a] to-black"
+                    className="absolute inset-0 bg-gradient-to-br from-morho-deep/50 via-black/80 to-black"
                 />
 
                 {/* Floating Animated Orbs */}

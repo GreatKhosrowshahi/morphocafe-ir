@@ -10,17 +10,28 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import AuthGuard from "./components/auth/AuthGuard";
 import { MenuProvider } from "./contexts/MenuContext";
-import { CartProvider } from "./contexts/CartContext";
+import { CartProvider } from "@/features/cart/context/CartContext";
 import AnimatedBackground from "./components/AnimatedBackground";
 import { ToastProvider } from "@/components/ui/Toast/ToastContext";
+import CartSidebar from "@/features/cart/components/CartSidebar";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <MenuProvider>
       <CartProvider>
         <ToastProvider>
+          <CartSidebar />
           <AnimatedBackground />
           <TooltipProvider>
             <BrowserRouter>
